@@ -1,0 +1,11 @@
+path: flexible_manipulation_flexbe_states.get_joint_names_from_move_group_state
+class: GetJointNamesFromMoveGroupState
+
+import_only: false
+
+input:
+    move_group : arm
+    robot_name : kinova
+
+outcome:
+    retrieved  # If we first setup the proxy

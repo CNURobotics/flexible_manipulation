@@ -1,0 +1,24 @@
+path: flexible_manipulation_flexbe_states.get_cartesian_path_state
+class: GetCartesianPathState
+
+import_only: false
+
+params:
+  timeout         : 0.5
+  wait_duration   : 0.05
+  max_step        : 1.0
+  jump_threshold  : 0.5
+  avoid_collision : True
+  action_topic    : None
+
+input:
+  action_topic : "group_name"
+  header       : "header"
+  start_state  : "start_state"
+  group_name   : "arm"
+  link_name    : "link_name"
+  waypoints    : "waypoints"
+  path_constraints : "path_constraints"
+
+outcome:
+    failed

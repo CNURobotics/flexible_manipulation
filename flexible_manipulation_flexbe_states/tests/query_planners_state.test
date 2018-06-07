@@ -1,0 +1,14 @@
+path: flexible_manipulation_flexbe_states.query_planners_state
+class: QueryPlannersState
+
+import_only: false
+
+params:
+  wait_duration : 0.5
+  action_topic  : None
+  timeout       : 0.6
+input:
+  action_topic : "/moveit/query_planners"
+
+outcome:
+    failed

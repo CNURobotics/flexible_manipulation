@@ -1,0 +1,97 @@
+<library path="libflexible_manipulation_moveit_capabilities">
+
+  <!-- New extended plugins -->
+  <class name="flexible_manipulation/ContinuousReplanningCapability" type="flexible_manipulation::ContinuousReplanningCapability" base_class_type="move_group::MoveGroupCapability">
+    <description>
+      Continuous replanning capability
+    </description>
+  </class>
+
+  <class name="flexible_manipulation/MoveGroupExtendedAction" type="flexible_manipulation::MoveGroupExtendedAction" base_class_type="move_group::MoveGroupCapability">
+    <description>
+      Flexible Manipulation extensions to the default MoveGroupAction with custom functionality
+    </description>
+  </class>
+
+  <class name="flexible_manipulation/OctomapAccessCapability" type="flexible_manipulation::OctomapAccessCapability" base_class_type="move_group::MoveGroupCapability">
+    <description>
+      Provides API for publishing the Octomap data of planning scene
+    </description>
+  </class>
+
+  <class name="flexible_manipulation/GetPlanningGroupConfigAction" type="flexible_manipulation::GetPlanningGroupConfigAction" base_class_type="move_group::MoveGroupCapability">
+    <description>
+      Provides API for retrieving the group configuration
+    </description>
+  </class>
+
+   <!-- default MoveIt! capabilities that are already Action interfaces -->
+   <!--class name="move_group/MoveGroupMoveAction" type="move_group::MoveGroupMoveAction" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Compute motion plans via a ROS action
+     </description>
+   </class-->
+
+   <!-- MoveIt!  default capabilities with Action interfaces -->
+   <class name="flexible_manipulation/ExecuteKnownTrajectoryCapability" type="flexible_manipulation::ExecuteKnownTrajectoryCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Allow execution of previously computed trajectories via a ROS action
+     </description>
+   </class>
+
+
+   <class name="flexible_manipulation/GetCartesianPathCapability" type="flexible_manipulation::GetCartesianPathCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Computing straight line Cartesian paths with collision checking via a ROS service
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/MoveGroupExecuteCapability" type="flexible_manipulation::MoveGroupExecuteCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Allow execution of previously computed paths via a ROS service
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/KinematicsCapability" type="flexible_manipulation::KinematicsCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Compute forward and inverse kinematics via ROS services
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/MoveGroupPlanCapability" type="flexible_manipulation::MoveGroupPlanCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Compute motion plans via a ROS service
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/QueryPlannersCapability" type="flexible_manipulation::QueryPlannersCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Allow querying of available planners (loaded from the motion planning plugin) via a ROS service
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/StateValidationCapability" type="flexible_manipulation::StateValidationCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Provide a ROS service that allows for testing state validity
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/GetPlanningSceneCapability" type="flexible_manipulation::GetPlanningSceneCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Provide a ROS service that allows for querying the planning scene
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/ApplyPlanningSceneCapability" type="flexible_manipulation::ApplyPlanningSceneCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Provide a ROS service for blocking updates to the planning scene
+     </description>
+   </class>
+
+   <class name="flexible_manipulation/ClearOctomapCapability" type="flexible_manipulation::ClearOctomapCapability" base_class_type="move_group::MoveGroupCapability">
+     <description>
+       Provide a ROS service and action interface that allows for clearing the octomap
+     </description>
+   </class>
+
+</library>

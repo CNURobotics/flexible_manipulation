@@ -1,0 +1,19 @@
+path: flexible_manipulation_flexbe_states.trajectory_to_follow_joint_trajectory_action_state
+class: TrajectoryToFollowJointTrajectoryActionState
+
+import_only: false
+
+params:
+    goal_time_tolerance       : 2.5
+    max_delay                 : 1.0
+    wait_duration             : 0.5
+
+input:
+  trajectory_action_topic  : "/follow_joint_trajectory"
+  joint_trajectory         : None
+  joint_goal_tolerances    : None
+  joint_path_tolerances    : None
+
+outcome:
+  param_error
+  

@@ -1,0 +1,27 @@
+<package format="2">
+  <name>flexible_manipulation_flexbe_states</name>
+  <version>0.0.0</version>
+  <description>
+     flexible_manipulation_flexbe_states provides a collection of robot-agnostic
+     states related to manipulation and trajectory execution.
+  </description>
+  <maintainer email="robotics@cnu.edu">David Conner</maintainer>
+	<license>BSD</license>
+  <url type="website">http://ros.org/wiki/flexible_manipulation</url>
+  <url type="repository">https://github.com/CNURobotics/flexible_manipulation</url>
+  <url type="bugtracker">https://github.com/CNURobotics/flexible_manipulation/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>flexbe_core</depend>
+  <depend>tf</depend>
+  <depend>flexible_manipulation_msgs</depend>
+  <depend>flexible_manipulation_moveit_capabilities</depend>
+  <depend>sensor_msgs</depend>
+
+  <export>
+    <flexbe_states />
+  </export>
+
+</package>

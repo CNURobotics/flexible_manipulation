@@ -1,0 +1,19 @@
+path: flexible_manipulation_flexbe_states.user_data_to_move_action_state
+class: UserDataToMoveActionState
+
+import_only: false
+
+params:
+    allowed_planning_time : 0.5
+    wait_duration         : 0.5
+    joint_tolerance       : 0.0
+    constraint_weight     : 1.0
+
+input:
+  action_topic : "move_group"
+  move_group   : "arm"
+  joint_values : [0.0, 1.2]
+  joint_names : ["joint1", "joint2"]
+
+outcome:
+    planning_failed

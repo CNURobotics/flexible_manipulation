@@ -1,0 +1,12 @@
+path: flexible_manipulation_flexbe_states.setup_proxy_moveit_client_state
+class: SetupProxyMoveItClientState
+
+import_only: false
+
+params:
+    action_type_and_topics : [ [ "MoveGroupAction", ["/move_group"] ] ]
+    robot_description      : "robot_description"
+    enter_wait_duration    : 1.0
+
+outcome:
+    connected

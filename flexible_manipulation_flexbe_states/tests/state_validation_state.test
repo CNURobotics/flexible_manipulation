@@ -1,0 +1,21 @@
+path: flexible_manipulation_flexbe_states.state_validation_state
+class: StateValidationState
+
+import_only: false
+
+params:
+  timeout       : 1.0
+  wait_duration : 0.5
+  action_topic  : None
+
+input:
+  action_topic : "move_group"
+  robot_state  : "robot_state"
+  group_name   : "arm"
+  joint_values : [0.0, 1.2]
+  joint_names  : ["joint1", "joint2"]
+  constraints  : "constraints"
+
+
+outcome:
+    failed

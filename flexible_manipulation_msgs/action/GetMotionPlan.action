@@ -1,0 +1,12 @@
+# request to the motion
+# planner and the output it provides
+
+moveit_msgs/MotionPlanRequest motion_plan_request
+
+---
+
+moveit_msgs/MotionPlanResponse motion_plan_response
+
+---
+
+#

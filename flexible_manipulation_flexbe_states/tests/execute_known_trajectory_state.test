@@ -1,0 +1,16 @@
+path: flexible_manipulation_flexbe_states.execute_known_trajectory_state
+class: ExecuteKnownTrajectoryState
+
+import_only: false
+
+params:
+    timeout       : 1.0
+    wait_duration : 0.5
+    action_topic  : None
+
+input:
+  action_topic : "execute_known_trajectory"
+  trajectory   : "trajectory"
+
+outcome:
+    param_error

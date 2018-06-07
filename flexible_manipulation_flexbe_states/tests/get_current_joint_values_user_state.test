@@ -1,0 +1,14 @@
+path: flexible_manipulation_flexbe_states.get_current_joint_values_user_state
+class: GetCurrentJointValuesUserState
+
+import_only: false
+
+params:
+    timeout:              0.6
+    joint_states_topic: '/joint_states'
+
+input:
+  joint_names : ["joint1", "joint2"]
+
+outcome:
+    timeout

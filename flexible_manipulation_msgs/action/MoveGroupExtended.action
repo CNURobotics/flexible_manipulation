@@ -1,0 +1,33 @@
+# Motion planning request to pass to planner
+moveit_msgs/MotionPlanRequest request
+
+# Planning options
+moveit_msgs/PlanningOptions planning_options
+
+# flexible manipulation extended planning options
+ExtendedPlanningOptions extended_planning_options
+
+---
+
+# An error code reflecting what went wrong
+moveit_msgs/MoveItErrorCodes error_code
+
+# The full starting state of the robot at the start of the trajectory
+moveit_msgs/RobotState trajectory_start
+
+# The trajectory that moved group produced for execution
+moveit_msgs/RobotTrajectory planned_trajectory
+
+# The trace of the trajectory recorded during execution
+moveit_msgs/RobotTrajectory executed_trajectory
+
+# The amount of time it took to complete the motion plan
+float64 planning_time
+
+# flexible manipulation  extended planning result
+ExtendedPlanningResult extended_planning_result
+
+---
+
+# The internal state that the move group action currently is in
+string state

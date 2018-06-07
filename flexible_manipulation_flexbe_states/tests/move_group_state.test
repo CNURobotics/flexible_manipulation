@@ -1,0 +1,20 @@
+path: flexible_manipulation_flexbe_states.move_group_state
+class: MoveGroupState
+
+import_only: false
+
+params:
+    timeout       : 1.0
+    wait_duration : 0.5
+    action_topic  : None
+
+input:
+  action_topic : "move_group"
+  move_group : "arm"
+  joint_names : ["joint1", "joint2"]
+  joint_values : [0.0, 1.2]
+  request : "request"
+  planning_options : "planning_options"
+
+outcome:
+    failed

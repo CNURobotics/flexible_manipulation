@@ -1,0 +1,15 @@
+path: flexible_manipulation_flexbe_states.joint_values_to_moveit_plan_state
+class: JointValuesToMoveItPlanState
+
+import_only: false
+
+params:
+  enter_wait_duration : 2.0
+input:
+  action_topic : "move_group"
+  move_group   : "arm"
+  joint_names  : ["joint1", "joint2"]
+  joint_values : [0.0, 1.2]
+
+outcome:
+    param_error

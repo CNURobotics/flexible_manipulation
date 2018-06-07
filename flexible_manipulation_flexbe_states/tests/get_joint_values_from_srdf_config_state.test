@@ -1,0 +1,12 @@
+path: flexible_manipulation_flexbe_states.get_joint_values_from_srdf_config_state
+class: GetJointValuesFromSrdfConfigState
+
+import_only: false
+
+input:
+    move_group : arm
+    robot_name : kinova
+    config_name: home
+
+outcome:
+    param_error
