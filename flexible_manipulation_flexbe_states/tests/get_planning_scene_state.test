@@ -13,4 +13,6 @@ input:
   components : None
 
 outcome:
-    done
+    # We expect this to fail if running stand alone
+    # without having anything to connect to
+    failed

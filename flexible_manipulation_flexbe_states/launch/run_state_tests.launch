@@ -6,34 +6,34 @@
         <param name="robot_description_semantic" textfile="$(find chris_kinova_bringup)/param/chris_kinova_lab.srdf" />
 
         <include file="$(find flexbe_testing)/launch/flexbe_testing.launch">
-                <arg name="compact_format" value="false" />
+                <arg name="compact_format" value="true" />
                 <arg name="testcases" value="
-                  $(arg path)/setup_proxy_moveit_client_state.test
-                  $(arg path)/get_cartesian_path_state.test
-                  $(arg path)/get_planning_scene_state.test
-                  $(arg path)/apply_planning_scene_state.test
-                  $(arg path)/clear_octomap_state.test
-                  $(arg path)/execute_known_trajectory_state.test
-                  $(arg path)/get_current_joint_values_list_state.test
-                  $(arg path)/get_current_joint_values_user_state.test
                   $(arg path)/get_joint_names_from_move_group_state.test
-                  $(arg path)/get_joint_values_from_srdf_config_state.test
-                  $(arg path)/joint_values_to_move_action_state.test
-                  $(arg path)/joint_values_to_moveit_plan_state.test
-                  $(arg path)/joint_values_to_trajectory_state.test
                   $(arg path)/move_group_state.test
-                  $(arg path)/query_planners_state.test
-                  $(arg path)/set_joint_trajectory_tolerances_state.test
+                  $(arg path)/apply_planning_scene_state.test
                   $(arg path)/state_validation_state.test
-                  $(arg path)/trajectory_to_follow_joint_trajectory_action_state.test
-                  $(arg path)/user_data_to_move_action_state.test
+                  $(arg path)/get_cartesian_path_state.test
+                  $(arg path)/moveit_extended_plan_endeffector_pose_state.test
                 " />
                 <!--
 
                 Working tests
+                $(arg path)/setup_proxy_moveit_client_state.test
+                $(arg path)/get_planning_scene_state.test
+                $(arg path)/clear_octomap_state.test
+                $(arg path)/execute_known_trajectory_state.test
+                $(arg path)/get_current_joint_values_list_state.test
+                $(arg path)/get_current_joint_values_user_state.test
+                $(arg path)/get_joint_values_from_srdf_config_state.test
+                $(arg path)/joint_values_to_move_action_state.test
+                $(arg path)/joint_values_to_moveit_plan_state.test
+                $(arg path)/joint_values_to_trajectory_state.test
+                $(arg path)/query_planners_state.test
+                $(arg path)/set_joint_trajectory_tolerances_state.test
+                $(arg path)/trajectory_to_follow_joint_trajectory_action_state.test
+                $(arg path)/user_data_to_move_action_state.test
 
                 Busted tests
-                $(arg path)/moveit_extended_plan_endeffector_pose_state.test
 
               -->
         </include>
