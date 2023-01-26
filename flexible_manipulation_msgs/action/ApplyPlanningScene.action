@@ -1,0 +1,9 @@
+#
+moveit_msgs/PlanningScene scene
+---
+
+#
+bool success
+---
+
+#

@@ -1,0 +1,16 @@
+path: flexible_manipulation_flexbe_states.get_planning_scene_state
+class: GetPlanningSceneState
+
+import_only: false
+
+params:
+  timeout       : 1.0
+  wait_duration : 0.5
+  action_topic  : None
+
+input:
+  action_topic : "/get_planning_scene"
+  components : None
+
+outcome:
+    done

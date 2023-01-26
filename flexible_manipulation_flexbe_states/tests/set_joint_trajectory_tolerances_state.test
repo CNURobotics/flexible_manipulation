@@ -1,0 +1,19 @@
+path: flexible_manipulation_flexbe_states.set_joint_trajectory_tolerances_state
+class: SetJointTrajectoryTolerancesState
+
+import_only: false
+
+params:
+    position_constraints       : [  0.5 ]
+    velocity_constraints       : [  0.0 ]
+    acceleration_constraints   : [ -1.0 ]
+
+input:
+  joint_names  : ["joint1", "joint2"]
+
+#output:
+#  unclear how to specify class output_keys
+#  joint_tolerances : [ {name:"joint1" position:0.5  velocity:0.0 acceleration:-1.0},  {name:"joint2" position:0.5  velocity:0.0 acceleration:-1.0}]
+
+outcome:
+  configured

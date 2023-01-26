@@ -1,0 +1,18 @@
+path: flexible_manipulation_flexbe_states.moveit_extended_plan_endeffector_pose_state
+class: MoveItPlanEndeffectorPoseState
+
+import_only: false
+
+params:
+    ignore_collisions  : False
+    include_torso      :  False
+    allowed_collisions : []
+    planner_id         : "RRTConnectkConfigDefault"
+    action_topic       : "/move_group"
+
+input:
+  target_pose : "HOME"
+  hand        : "left"
+
+outcome:
+    param_error

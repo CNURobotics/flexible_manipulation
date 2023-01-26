@@ -1,0 +1,9 @@
+std_msgs/Header header
+std_msgs/String group_name
+std_msgs/String link_name
+moveit_msgs/RobotState start_state
+geometry_msgs/Pose[] waypoints
+std_msgs/Float64 max_step
+std_msgs/Float64 jump_threshold
+std_msgs/Bool avoid_collisions
+moveit_msgs/Constraints path_constraints

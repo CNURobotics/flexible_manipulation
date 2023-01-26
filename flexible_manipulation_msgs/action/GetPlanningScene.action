@@ -1,0 +1,10 @@
+# Get parts of planning scene that are of interest
+moveit_msgs/PlanningSceneComponents components
+
+---
+
+moveit_msgs/PlanningScene scene
+
+---
+
+#

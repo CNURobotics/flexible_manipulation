@@ -1,0 +1,50 @@
+# Frame for specified waypoints
+Header header
+
+# start at which to start Cartesian path
+moveit_msgs/RobotState start_state
+
+# mandatory name of group to compute the path for
+string group_name
+
+# optional name of IK link for which waypoints are specified.
+# If not specified, the tip of the group (which is assumed to be a chain)
+# is assumed to be the link
+string link_name
+
+# A sequence of waypoints to be followed by the specified link,
+# while moving the specified group, such that the group moves only
+# in a straight line between waypoints
+geometry_msgs/Pose[] waypoints
+
+# maximum distance (in Cartesian space) between consecutive points
+# in the returned path. This must always be specified and > 0
+float64 max_step
+
+# If above 0, this value assumed to be maximum allowed distance
+# (L infinity) in configuration space, between consecutive points.
+# If this distance is found to be above the maximum threshold, the path
+# computation fails
+float64 jump_threshold
+
+# Set to true if collisions should be avoided when possible
+bool avoid_collisions
+
+# Specify additional constraints to be met by the Cartesian path
+moveit_msgs/Constraints path_constraints
+
+
+---
+# The state at which the computed path starts
+moveit_msgs/RobotState start_state
+
+# The computed solution trajectory, for the desired group, in configuration space
+moveit_msgs/RobotTrajectory solution
+
+# If the computation was incomplete, this value indicates the fraction of the path
+# that was in fact computed (number of waypoints traveled through)
+float64 fraction
+
+# The error code of the computation
+moveit_msgs/MoveItErrorCodes error_code
+---

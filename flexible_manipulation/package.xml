@@ -1,0 +1,29 @@
+<package>
+  <name>flexible_manipulation</name>
+  <version>0.0.0</version>
+  <description>
+    Flexible Manipulation is a collection of MoveIt capabilities that
+    interface with FlexBE (http://wiki.ros.org/flexbe) compatible state implementations.
+
+    These allow a user to graphically chain together states in a state machine
+    to handle manipulation tasks.
+
+    This allows for supervisory and sliding autonomy during manipulation, and
+    better control over contingencies and recovery behaviors.
+  </description>
+	<maintainer email="david.conner@cnu.edu">David Conner</maintainer>
+	<license>BSD</license>
+  <url type="website">http://ros.org/wiki/flexible_manipulation</url>
+  <url type="repository">https://github.com/CNURobotics/flexible_manipulation</url>
+  <url type="bugtracker">https://github.com/CNURobotics/flexible_manipulation/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>flexible_manipulation_msgs</run_depend>
+  <run_depend>flexible_manipulation_moveit_capabilities</run_depend>
+  <run_depend>flexible_manipulation_flexbe_states</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

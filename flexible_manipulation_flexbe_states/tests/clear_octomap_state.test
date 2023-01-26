@@ -1,0 +1,14 @@
+path: flexible_manipulation_flexbe_states.clear_octomap_state
+class: ClearOctomapState
+
+import_only: false
+
+params:
+    timeout       : 1.0
+    wait_duration : 0.5
+    action_topic  : "clear_map"
+input:
+  action_topic : None
+
+outcome:
+    failed

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>flexible_manipulation_moveit_capabilities</name>
+  <version>0.0.0</version>
+  <description>The flexible_manipulation_moveit_capabilities package provides custom move_group pluigins.
+
+    The capabilities are based on functionality provided by the vigir_move_group package
+    (https://github.com/team-vigir/vigir_manipulation_planning) developed by Team ViGIR during the
+    DARPA Robotics Challenge.
+
+  </description>
+
+  <maintainer email="david.conner@cnu.edu">robotics@cnu.edu</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>cmake_modules</depend>
+  <depend>geometry_msgs</depend>
+  <depend>moveit_msgs</depend>
+  <depend>moveit_ros_move_group</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <!--depend>vigir_plan_execution</depend>
+  <depend>vigir_moveit_utils</depend -->
+  <depend>flexible_manipulation_msgs</depend>
+  <depend>tf</depend>
+
+  <export>
+    <moveit_ros_move_group plugin="${prefix}/flexible_manipulation_moveit_capabilities_plugin_description.xml"/>
+  </export>
+</package>

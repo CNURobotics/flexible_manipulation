@@ -1,0 +1,15 @@
+path: flexible_manipulation_flexbe_states.apply_planning_scene_state
+class: ApplyPlanningSceneState
+
+import_only: false
+
+params:
+    timeout       : 1.0
+    wait_duration : 0.5
+    action_topic  : None
+
+input:
+  action_topic : "apply_planning_scene"
+
+outcome:
+    done

@@ -1,0 +1,14 @@
+path: flexible_manipulation_flexbe_states.joint_values_to_trajectory_state
+class: JointValuesToTrajectoryState
+
+import_only: false
+
+params:
+    duration : 12.5
+
+input:
+  joint_names  : ["joint1", "joint2"]
+  joint_values : [0.0, 1.2]
+
+outcome:
+    done

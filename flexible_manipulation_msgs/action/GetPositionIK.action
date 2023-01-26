@@ -1,0 +1,14 @@
+# inverse kinematics
+# the inverse kinematics request
+moveit_msgs/PositionIKRequest ik_request
+
+---
+# the returned solution
+# (in the same order as the list of joints specified in th IKRequest message)
+moveit_msgs/RobotState solution
+
+moveit_msgs/MoveItErrorCodes error_code
+
+---
+
+# 
