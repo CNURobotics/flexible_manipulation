@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import copy
 import rospy
 from flexbe_core import EventState, Logger
 
@@ -179,10 +180,10 @@ class TrajectoryToFollowJointTrajectoryActionState(EventState):
             action_goal = FollowJointTrajectoryGoal()
             if isinstance(userdata.joint_trajectory,RobotTrajectory):
                 Logger.loginfo('%s - using RobotTrajectory ' % self.name)
-                action_goal.trajectory      = userdata.joint_trajectory.joint_trajectory
+                action_goal.trajectory      = copy.deepcopy(userdata.joint_trajectory.joint_trajectory)
             elif isinstance(userdata.joint_trajectory, JointTrajectory):
                 Logger.loginfo('%s - using JointTrajectory ' % self.name)
-                action_goal.trajectory      = userdata.joint_trajectory
+                action_goal.trajectory      = copy.deepcopy(userdata.joint_trajectory)
             else:
                 self.status_text = '%s - user data does not have valid trajectory message!\n          Must be  RobotTrajectory or JointTrajectory type!' % (self.name)
                 self.return_code = 'param_error'
