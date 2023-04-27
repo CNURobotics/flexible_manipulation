@@ -40,18 +40,19 @@
 /* Author: Ioan Sucan, David Conner, Julie Gates, and Jenny Gu */
 
 #include "state_validation_capability.h"
-#include <eigen_conversions/eigen_msg.h>
 #include <moveit/collision_detection/collision_tools.h>
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit/move_group/capability_names.h>
 #include <moveit/robot_state/conversions.h>
 
-flexible_manipulation::StateValidationCapability::StateValidationCapability()
-  : move_group::MoveGroupCapability("StateValidationCapability")
+namespace flexible_manipulation
+{
+  StateValidationCapability::StateValidationCapability()
+    : move_group::MoveGroupCapability("StateValidationCapability")
 {
 }
 
-void flexible_manipulation::StateValidationCapability::initialize()
+void StateValidationCapability::initialize()
 {
   validity_service_ = root_node_handle_.advertiseService(
       move_group::STATE_VALIDITY_SERVICE_NAME, &flexible_manipulation::StateValidationCapability::computeService, this);
@@ -62,7 +63,7 @@ void flexible_manipulation::StateValidationCapability::initialize()
   action_server_->start();
 }
 
-void flexible_manipulation::StateValidationCapability::executeCallback(
+void StateValidationCapability::executeCallback(
     const flexible_manipulation_msgs::StateValidationGoalConstPtr& goal)
 {
   flexible_manipulation_msgs::StateValidationResult res;
@@ -143,7 +144,7 @@ void flexible_manipulation::StateValidationCapability::executeCallback(
   return;
 }
 
-bool flexible_manipulation::StateValidationCapability::computeService(moveit_msgs::GetStateValidity::Request& req,
+bool StateValidationCapability::computeService(moveit_msgs::GetStateValidity::Request& req,
                                                                       moveit_msgs::GetStateValidity::Response& res)
 {
   planning_scene_monitor::LockedPlanningSceneRO ls(context_->planning_scene_monitor_);
@@ -215,6 +216,7 @@ bool flexible_manipulation::StateValidationCapability::computeService(moveit_msg
 
   return true;
 }
+}  // namespace flexible_manipulation
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::StateValidationCapability, move_group::MoveGroupCapability)

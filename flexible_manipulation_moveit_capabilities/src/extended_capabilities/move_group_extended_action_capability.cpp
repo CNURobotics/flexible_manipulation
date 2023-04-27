@@ -68,6 +68,8 @@
 
 #include <nav_msgs/Path.h>
 
+#include <tf2_eigen/tf2_eigen.h>
+
 using namespace move_group;
 
 namespace
@@ -191,9 +193,9 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallback(
         goal->extended_planning_options.reference_point.orientation.w != 0.0)
     {
       ROS_INFO("Using reference point in the request");
-      tf::Transform target_frame_t_reference_point;
-      tf::Transform target_pose;
-      tf::Transform transformed_pose;
+      Eigen::Isometry3d target_frame_t_reference_point;
+      Eigen::Isometry3d target_pose;
+      Eigen::Isometry3d transformed_pose;
 
       new_target_poses = goal->extended_planning_options.target_poses;
 
@@ -205,13 +207,13 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallback(
         ROS_INFO("Calculating new waypoints given reference point for FREE "
                  "MOTIONS and CATRTESIAN WAYPOINTS");
 
-        tf::poseMsgToTF(goal->extended_planning_options.reference_point, target_frame_t_reference_point);
+        tf2::fromMsg(goal->extended_planning_options.reference_point, target_frame_t_reference_point);
 
         for (size_t i = 0; i < goal->extended_planning_options.target_poses.size(); ++i)
         {
-          tf::poseMsgToTF(goal->extended_planning_options.target_poses[i], target_pose);
+          tf2::fromMsg(goal->extended_planning_options.target_poses[i], target_pose);
           transformed_pose = target_pose * target_frame_t_reference_point.inverse();
-          tf::poseTFToMsg(transformed_pose, new_target_poses[i]);
+          new_target_poses[i] = tf2::toMsg(transformed_pose);
         }
 
         new_goal->extended_planning_options.target_poses = new_target_poses;
@@ -227,7 +229,7 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallback(
                    "CIRCULAR MOTIONS");
           // Only used if keep endeffector orientation true or if circular
           // motion requested
-          Eigen::Affine3d eef_start_pose;
+          Eigen::Isometry3d eef_start_pose;
 
           if (planning_scene_utils::getEndeffectorTransform(goal->request.group_name, context_->planning_scene_monitor_,
                                                             eef_start_pose))
@@ -244,10 +246,10 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallback(
                                                                                            // frame
             {
               geometry_msgs::Pose wrist_pose;
-              tf::poseEigenToMsg(eef_start_pose, wrist_pose);  // Converts eef eigen pose to geometry pose
+              wrist_pose = tf2::toMsg(eef_start_pose);  // Converts eef eigen pose to geometry pose
 
               // calculate the difference between them
-              tf::Vector3 diff_vector;
+              tf2::Vector3 diff_vector;
               diff_vector.setX(wrist_pose.position.x - reference_pose.pose.position.x);
               diff_vector.setY(wrist_pose.position.y - reference_pose.pose.position.y);
               diff_vector.setZ(wrist_pose.position.z - reference_pose.pose.position.z);
@@ -553,7 +555,7 @@ void flexible_manipulation::MoveGroupExtendedAction::executeCartesianMoveCallbac
 {
   // Only used if keep endeffector orientation true or if circular motion
   // requested
-  Eigen::Affine3d eef_start_pose;
+  Eigen::Isometry3d eef_start_pose;
 
   if ((goal->extended_planning_options.target_motion_type ==
            flexible_manipulation_msgs::ExtendedPlanningOptions::TYPE_CIRCULAR_MOTION ||
@@ -591,11 +593,10 @@ void flexible_manipulation::MoveGroupExtendedAction::executeCartesianMoveCallbac
       // Optionally set all poses to keep start orientation
       if (goal->extended_planning_options.keep_endeffector_orientation != 0u)
       {
-        Eigen::Affine3d oriented_pose =
-            Eigen::Translation3d(
-                Eigen::Vector3d(tmp_pose.pose.position.x, tmp_pose.pose.position.y, tmp_pose.pose.position.z)) *
-            eef_start_pose.rotation();
-        tf::poseEigenToMsg(oriented_pose, tmp_pose.pose);
+        Eigen::Isometry3d oriented_pose;
+        oriented_pose.translation() = Eigen::Vector3d(tmp_pose.pose.position.x, tmp_pose.pose.position.y, tmp_pose.pose.position.z);
+        oriented_pose *= eef_start_pose.rotation();
+        tmp_pose.pose = tf2::toMsg(oriented_pose);
       }
 
       pose_vec[i] = tmp_pose.pose;
@@ -620,8 +621,8 @@ void flexible_manipulation::MoveGroupExtendedAction::executeCartesianMoveCallbac
     // Can easily transform goal pose to arbitrary target frame
     this->performTransform(rotation_pose, context_->planning_scene_monitor_->getRobotModel()->getModelFrame());
 
-    Eigen::Affine3d rotation_center;
-    tf::poseMsgToEigen(rotation_pose.pose, rotation_center);
+    Eigen::Isometry3d rotation_center;
+    tf2::fromMsg(rotation_pose.pose, rotation_center);
 
     {
       constrained_motion_utils::getCircularArcPoses(
@@ -838,7 +839,7 @@ bool flexible_manipulation::MoveGroupExtendedAction::computeCartesianPath(moveit
     }
 
     bool ok = true;
-    EigenSTL::vector_Affine3d waypoints(req.waypoints.size());
+    EigenSTL::vector_Isometry3d waypoints(req.waypoints.size());
     const std::string& default_frame = context_->planning_scene_monitor_->getRobotModel()->getModelFrame();
     bool no_transform = req.header.frame_id.empty() ||
                         robot_state::Transforms::sameFrame(req.header.frame_id, default_frame) ||
@@ -848,7 +849,7 @@ bool flexible_manipulation::MoveGroupExtendedAction::computeCartesianPath(moveit
     {
       if (no_transform)
       {
-        tf::poseMsgToEigen(req.waypoints[i], waypoints[i]);
+        tf2::fromMsg(req.waypoints[i], waypoints[i]);
       }
       else
       {
@@ -857,7 +858,7 @@ bool flexible_manipulation::MoveGroupExtendedAction::computeCartesianPath(moveit
         p.pose = req.waypoints[i];
         if (performTransform(p, default_frame))
         {
-          tf::poseMsgToEigen(p.pose, waypoints[i]);
+          tf2::fromMsg(p.pose, waypoints[i]);
         }
         else
         {

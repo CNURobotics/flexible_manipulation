@@ -78,7 +78,7 @@ class ApplyPlanningSceneState(EventState):
         if self.client.has_result(self.action_topic):
             result = self.client.get_result(self.action_topic)
 
-            Logger.loginfo('ApplyPlanningScene - %s' % str(self.client.get_goal_status_text(self.action_topic)))
+            #Logger.loginfo('ApplyPlanningScene - %s' % str(self.client.get_goal_status_text(self.action_topic)))
 
             if result.success:
                 Logger.loginfo('ApplyPlanningScene success!  ')

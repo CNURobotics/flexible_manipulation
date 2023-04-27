@@ -42,12 +42,14 @@
 #include "apply_planning_scene_capability.h"
 #include <moveit/move_group/capability_names.h>
 
-flexible_manipulation::ApplyPlanningSceneCapability::ApplyPlanningSceneCapability()
-  : move_group::MoveGroupCapability("ApplyPlanningSceneCapability")
+namespace flexible_manipulation
+{
+  ApplyPlanningSceneCapability::ApplyPlanningSceneCapability()
+    : move_group::MoveGroupCapability("ApplyPlanningSceneCapability")
 {
 }
 
-void flexible_manipulation::ApplyPlanningSceneCapability::initialize()
+void ApplyPlanningSceneCapability::initialize()
 {
   service_ = root_node_handle_.advertiseService(move_group::APPLY_PLANNING_SCENE_SERVICE_NAME,
                                                 &flexible_manipulation::ApplyPlanningSceneCapability::applyScene, this);
@@ -58,7 +60,7 @@ void flexible_manipulation::ApplyPlanningSceneCapability::initialize()
   action_server_->start();
 }
 
-void flexible_manipulation::ApplyPlanningSceneCapability::executeCallback(
+void ApplyPlanningSceneCapability::executeCallback(
     const flexible_manipulation_msgs::ApplyPlanningSceneGoalConstPtr& goal)
 {
   ROS_INFO(" Received planning scene update ...");
@@ -67,7 +69,7 @@ void flexible_manipulation::ApplyPlanningSceneCapability::executeCallback(
   {
     action_res.success = false;
     action_server_->setAborted(action_res, "Cannot apply PlanningScene as no scene is monitored.");
-    ROS_ERROR("Cannot apply PlanningScene as no scene is monitored.");
+    ROS_ERROR_NAMED(getName(), "Cannot apply PlanningScene as no scene is monitored.");
     return;
   }
 
@@ -80,23 +82,24 @@ void flexible_manipulation::ApplyPlanningSceneCapability::executeCallback(
   }
   else
   {
-    ROS_ERROR(" Failed to update the planning scene !");
+    ROS_ERROR_NAMED(getName(), " Failed to update the planning scene !");
     action_server_->setAborted(action_res, "Failed to apply PlanningScene");
   }
 }
 
-bool flexible_manipulation::ApplyPlanningSceneCapability::applyScene(moveit_msgs::ApplyPlanningScene::Request& req,
+bool ApplyPlanningSceneCapability::applyScene(moveit_msgs::ApplyPlanningScene::Request& req,
                                                                      moveit_msgs::ApplyPlanningScene::Response& res)
 {
   if (!context_->planning_scene_monitor_)
   {
-    ROS_ERROR("Cannot apply PlanningScene as no scene is monitored.");
+    ROS_ERROR_NAMED(getName(), "Cannot apply PlanningScene as no scene is monitored.");
     return true;
   }
   context_->planning_scene_monitor_->updateFrameTransforms();
   res.success = context_->planning_scene_monitor_->newPlanningSceneMessage(req.scene);
   return true;
 }
+} // end of namespace
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::ApplyPlanningSceneCapability, move_group::MoveGroupCapability)

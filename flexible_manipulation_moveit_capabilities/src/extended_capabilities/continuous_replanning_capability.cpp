@@ -49,12 +49,14 @@
 #include <octomap_msgs/GetOctomap.h>
 #include <octomap_msgs/conversions.h>
 
-flexible_manipulation::ContinuousReplanningCapability::ContinuousReplanningCapability()
+namespace flexible_manipulation
+{
+  ContinuousReplanningCapability::ContinuousReplanningCapability()
   : move_group::MoveGroupCapability("ContinuousReplanningCapability")
 {
 }
 
-void flexible_manipulation::ContinuousReplanningCapability::initialize()
+void ContinuousReplanningCapability::initialize()
 {
   plan_execution_.reset(new plan_execution::ContinuousPlanExecution(context_));
 
@@ -62,19 +64,20 @@ void flexible_manipulation::ContinuousReplanningCapability::initialize()
   abort_sub_ = root_node_handle_.subscribe("/abort_cont", 1, &ContinuousReplanningCapability::abortCb, this);
 }
 
-void flexible_manipulation::ContinuousReplanningCapability::triggerCb(const std_msgs::Empty::ConstPtr& /*msg*/)
+void ContinuousReplanningCapability::triggerCb(const std_msgs::Empty::ConstPtr& /*msg*/)
 {
-  ROS_INFO("Received trigger");
+  ROS_INFO_NAMED(getName(), "Received trigger");
 
   plan_execution_->startExecution();
 }
 
-void flexible_manipulation::ContinuousReplanningCapability::abortCb(const std_msgs::Empty::ConstPtr& /*msg*/)
+void ContinuousReplanningCapability::abortCb(const std_msgs::Empty::ConstPtr& /*msg*/)
 {
-  ROS_INFO("Received abort");
+  ROS_INFO_NAMED(getName(), "Received abort");
 
   plan_execution_->stopExecution();
 }
+}  // namespace flexible_manipulation
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::ContinuousReplanningCapability, move_group::MoveGroupCapability)

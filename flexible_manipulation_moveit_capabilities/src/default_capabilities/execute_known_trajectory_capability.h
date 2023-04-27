@@ -59,7 +59,7 @@ public:
   ExecuteKnownTrajectoryCapability();
   ~ExecuteKnownTrajectoryCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   // Common code

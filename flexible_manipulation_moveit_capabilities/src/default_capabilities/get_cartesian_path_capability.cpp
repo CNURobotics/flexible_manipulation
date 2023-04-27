@@ -40,7 +40,7 @@
 /* Author: Ioan Sucan and David Conner */
 
 #include "get_cartesian_path_capability.h"
-#include <eigen_conversions/eigen_msg.h>
+#include <tf2_eigen/tf2_eigen.h>
 #include <moveit/collision_detection/collision_tools.h>
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit/move_group/capability_names.h>
@@ -49,27 +49,27 @@
 #include <moveit/trajectory_processing/iterative_time_parameterization.h>
 #include <moveit_msgs/DisplayTrajectory.h>
 
-flexible_manipulation::GetCartesianPathCapability::GetCartesianPathCapability()
-  : move_group::MoveGroupCapability("GetCartesianPathCapability"), display_computed_paths_(true)
+bool isStateValid(const planning_scene::PlanningScene* planning_scene,
+                  const kinematic_constraints::KinematicConstraintSet* constraint_set, robot_state::RobotState* state,
+                  const robot_state::JointModelGroup* group, const double* ik_solution)
 {
+  state->setJointGroupPositions(group, ik_solution);
+  state->update();
+  return ((planning_scene == nullptr) || !planning_scene->isStateColliding(*state, group->getName())) &&
+         ((constraint_set == nullptr) || constraint_set->decide(*state).satisfied);
 }
 
-void flexible_manipulation::GetCartesianPathCapability::initialize()
+
+namespace flexible_manipulation
 {
-  display_path_ = node_handle_.advertise<moveit_msgs::DisplayTrajectory>(
-      planning_pipeline::PlanningPipeline::DISPLAY_PATH_TOPIC, 10, true);
-  cartesian_path_service_ =
-      root_node_handle_.advertiseService(move_group::CARTESIAN_PATH_SERVICE_NAME,
-                                         &flexible_manipulation::GetCartesianPathCapability::computeService, this);
-  // start the move action server
-  action_server_.reset(new actionlib::SimpleActionServer<flexible_manipulation_msgs::GetCartesianPathAction>(
-      root_node_handle_, move_group::CARTESIAN_PATH_SERVICE_NAME,
-      boost::bind(&flexible_manipulation::GetCartesianPathCapability::executeCallback, this, _1), false));
-  action_server_->start();
-}
+  GetCartesianPathCapability::GetCartesianPathCapability()
+  : move_group::MoveGroupCapability("GetCartesianPathCapability"), display_computed_paths_(true)
+  {
+  }
+
 
 // Action interface makes use of the service interface
-void flexible_manipulation::GetCartesianPathCapability::executeCallback(
+void GetCartesianPathCapability::executeCallback(
     const flexible_manipulation_msgs::GetCartesianPathGoalConstPtr& goal)
 {
   moveit_msgs::GetCartesianPath::Request req;
@@ -103,23 +103,25 @@ void flexible_manipulation::GetCartesianPathCapability::executeCallback(
   }
 }
 
-namespace
-{
-bool isStateValid(const planning_scene::PlanningScene* planning_scene,
-                  const kinematic_constraints::KinematicConstraintSet* constraint_set, robot_state::RobotState* state,
-                  const robot_state::JointModelGroup* group, const double* ik_solution)
-{
-  state->setJointGroupPositions(group, ik_solution);
-  state->update();
-  return ((planning_scene == nullptr) || !planning_scene->isStateColliding(*state, group->getName())) &&
-         ((constraint_set == nullptr) || constraint_set->decide(*state).satisfied);
-}
-}  // namespace
 
-bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_msgs::GetCartesianPath::Request& req,
+void GetCartesianPathCapability::initialize()
+{
+  display_path_ = node_handle_.advertise<moveit_msgs::DisplayTrajectory>(
+      planning_pipeline::PlanningPipeline::DISPLAY_PATH_TOPIC, 10, true);
+  cartesian_path_service_ =
+      root_node_handle_.advertiseService(move_group::CARTESIAN_PATH_SERVICE_NAME,
+                                         &flexible_manipulation::GetCartesianPathCapability::computeService, this);
+  // start the move action server
+  action_server_.reset(new actionlib::SimpleActionServer<flexible_manipulation_msgs::GetCartesianPathAction>(
+      root_node_handle_, move_group::CARTESIAN_PATH_SERVICE_NAME,
+      boost::bind(&flexible_manipulation::GetCartesianPathCapability::executeCallback, this, _1), false));
+  action_server_->start();
+}
+
+bool GetCartesianPathCapability::computeService(moveit_msgs::GetCartesianPath::Request& req,
                                                                        moveit_msgs::GetCartesianPath::Response& res)
 {
-  ROS_INFO("Received request to compute Cartesian path");
+  ROS_INFO_NAMED(getName(), "Received request to compute Cartesian path");
   context_->planning_scene_monitor_->updateFrameTransforms();
 
   robot_state::RobotState start_state =
@@ -134,7 +136,7 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
     }
 
     bool ok = true;
-    EigenSTL::vector_Affine3d waypoints(req.waypoints.size());
+    EigenSTL::vector_Isometry3d waypoints(req.waypoints.size());
     const std::string& default_frame = context_->planning_scene_monitor_->getRobotModel()->getModelFrame();
     bool no_transform = req.header.frame_id.empty() ||
                         robot_state::Transforms::sameFrame(req.header.frame_id, default_frame) ||
@@ -144,7 +146,7 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
     {
       if (no_transform)
       {
-        tf::poseMsgToEigen(req.waypoints[i], waypoints[i]);
+        tf2::fromMsg(req.waypoints[i], waypoints[i]);
       }
       else
       {
@@ -153,11 +155,11 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
         p.pose = req.waypoints[i];
         if (performTransform(p, default_frame))
         {
-          tf::poseMsgToEigen(p.pose, waypoints[i]);
+          tf2::fromMsg(p.pose, waypoints[i]);  
         }
         else
         {
-          ROS_ERROR("Error encountered transforming waypoints to frame '%s'", default_frame.c_str());
+          ROS_ERROR_NAMED(getName(), "Error encountered transforming waypoints to frame '%s'", default_frame.c_str());
           ok = false;
           break;
         }
@@ -168,7 +170,7 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
     {
       if (req.max_step < std::numeric_limits<double>::epsilon())
       {
-        ROS_ERROR("Maximum step to take between consecutive configrations "
+        ROS_ERROR_NAMED(getName(), "Maximum step to take between consecutive configrations "
                   "along Cartesian path was not specified (this "
                   "value needs to be > 0)");
         res.error_code.val = moveit_msgs::MoveItErrorCodes::FAILURE;
@@ -192,7 +194,7 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
                             kset->empty() ? nullptr : kset.get(), _1, _2, _3);
           }
           bool global_frame = !robot_state::Transforms::sameFrame(link_name, req.header.frame_id);
-          ROS_INFO("Attempting to follow %u waypoints for link '%s' using a "
+          ROS_INFO_NAMED(getName(), "Attempting to follow %u waypoints for link '%s' using a "
                    "step of %lf m and jump threshold %lf (in "
                    "%s reference frame)",
                    (unsigned int)waypoints.size(), link_name.c_str(), req.max_step, req.jump_threshold,
@@ -215,7 +217,7 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
           time_param.computeTimeStamps(rt, 1.0);
 
           rt.getRobotTrajectoryMsg(res.solution);
-          ROS_INFO("Computed Cartesian path with %u points (followed %lf%% of "
+          ROS_INFO_NAMED(getName(), "Computed Cartesian path with %u points (followed %lf%% of "
                    "requested trajectory)",
                    (unsigned int)traj.size(), res.fraction * 100.0);
           if (display_computed_paths_ && rt.getWayPointCount() > 0)
@@ -242,6 +244,9 @@ bool flexible_manipulation::GetCartesianPathCapability::computeService(moveit_ms
 
   return true;
 }
+} //namespace flexible_manipulation
+
+
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::GetCartesianPathCapability, move_group::MoveGroupCapability)

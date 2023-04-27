@@ -60,7 +60,7 @@ class ContinuousReplanningCapability : public move_group::MoveGroupCapability
 public:
   ContinuousReplanningCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   void triggerCb(const std_msgs::Empty::ConstPtr& msg);

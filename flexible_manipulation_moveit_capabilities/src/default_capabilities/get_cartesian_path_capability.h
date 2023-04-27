@@ -54,7 +54,7 @@ class GetCartesianPathCapability : public move_group::MoveGroupCapability
 public:
   GetCartesianPathCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   // Action interface

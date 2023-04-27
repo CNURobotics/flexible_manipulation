@@ -56,7 +56,7 @@ class KinematicsCapability : public move_group::MoveGroupCapability
 public:
   KinematicsCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   // Action interface

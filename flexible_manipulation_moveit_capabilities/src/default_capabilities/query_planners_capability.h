@@ -57,7 +57,7 @@ class QueryPlannersCapability : public move_group::MoveGroupCapability
 public:
   QueryPlannersCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   void executeCallback(const flexible_manipulation_msgs::QueryPlannersGoalConstPtr& goal);

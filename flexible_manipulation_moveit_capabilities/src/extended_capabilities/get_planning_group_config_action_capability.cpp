@@ -42,12 +42,14 @@
 
 #include <moveit/planning_pipeline/planning_pipeline.h>
 
-flexible_manipulation::GetPlanningGroupConfigAction::GetPlanningGroupConfigAction()
+namespace flexible_manipulation
+{
+  GetPlanningGroupConfigAction::GetPlanningGroupConfigAction()
   : move_group::MoveGroupCapability("GetPlanningGroupConfigAction")
 {
 }
 
-void flexible_manipulation::GetPlanningGroupConfigAction::initialize()
+void GetPlanningGroupConfigAction::initialize()
 {
   gpgc_action_server_.reset(new actionlib::SimpleActionServer<flexible_manipulation_msgs::GetPlanningGroupConfigAction>(
       root_node_handle_, "get_planning_group_config",
@@ -56,14 +58,14 @@ void flexible_manipulation::GetPlanningGroupConfigAction::initialize()
 }
 
 // @todo - convert to Action server interface
-void flexible_manipulation::GetPlanningGroupConfigAction::executeCallback(
+void GetPlanningGroupConfigAction::executeCallback(
     const flexible_manipulation_msgs::GetPlanningGroupConfigGoalConstPtr& goal)
 {
   const robot_model::RobotModelConstPtr& robot_model = context_->planning_pipeline_->getRobotModel();
 
   if (!robot_model->hasJointModelGroup(goal->group_name))
   {
-    ROS_ERROR("Service request for joint states of invalid group %s", goal->group_name.c_str());
+    ROS_ERROR_NAMED(getName(), "Service request for joint states of invalid group %s", goal->group_name.c_str());
     result_.positions.clear();
     gpgc_action_server_->setAborted(result_, "invalid group name " + goal->group_name);
     return;
@@ -82,6 +84,7 @@ void flexible_manipulation::GetPlanningGroupConfigAction::executeCallback(
 
   return;
 }
+}  // namespace flexible_manipulation
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::GetPlanningGroupConfigAction, move_group::MoveGroupCapability)

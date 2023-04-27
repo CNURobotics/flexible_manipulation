@@ -54,7 +54,7 @@ class MoveGroupPlanCapability : public move_group::MoveGroupCapability
 public:
   MoveGroupPlanCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   // Action interface

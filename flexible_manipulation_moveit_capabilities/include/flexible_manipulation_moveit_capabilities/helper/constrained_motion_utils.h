@@ -59,7 +59,7 @@ namespace constrained_motion_utils
  * @param angular_resolution always positive angular resolution in rad
  * @param arc_length signed arc length
  */
-static void getCircularArcPoses(const Eigen::Affine3d& rotation_center, const Eigen::Affine3d& start_point,
+static void getCircularArcPoses(const Eigen::Isometry3d& rotation_center, const Eigen::Isometry3d& start_point,
                                 std::vector<geometry_msgs::Pose>& poses, double angular_resolution, double arc_length,
                                 bool keep_orientation = false, double pitch = 0.0)
 {
@@ -74,17 +74,18 @@ static void getCircularArcPoses(const Eigen::Affine3d& rotation_center, const Ei
 
   for (size_t i = 1; i <= size; ++i)
   {
-    Eigen::Affine3d rotation_increment(
+    Eigen::Isometry3d rotation_increment(
         Eigen::AngleAxisd(direction * angular_resolution * static_cast<double>(i), Eigen::Vector3d::UnitX()));
 
     Eigen::Translation3d translation_increment(pitch_increment * static_cast<double>(i) * Eigen::Vector3d::UnitX());
 
-    Eigen::Affine3d pose(rotation_center * translation_increment * rotation_increment * rotation_center.inverse() *
+    Eigen::Isometry3d pose(rotation_center * translation_increment * rotation_increment * rotation_center.inverse() *
                          start_point);
 
     if (keep_orientation)
     {
-      pose = Eigen::Translation3d(pose.translation()) * start_point.rotation();
+      pose.linear().setIdentity(); // Ignore rotation part, and retain translation
+      pose *= start_point.rotation();
     }
 
     tf::poseEigenToMsg(pose, poses[i - 1]);

@@ -52,7 +52,7 @@ class GetPlanningGroupConfigAction : public move_group::MoveGroupCapability
 public:
   GetPlanningGroupConfigAction();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   void executeCallback(const flexible_manipulation_msgs::GetPlanningGroupConfigGoalConstPtr& goal);

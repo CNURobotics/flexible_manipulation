@@ -54,17 +54,13 @@ class GetPlanningSceneCapability : public move_group::MoveGroupCapability
 public:
   GetPlanningSceneCapability();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   void executeCallback(const flexible_manipulation_msgs::GetPlanningSceneGoalConstPtr& goal);
 
   std::unique_ptr<actionlib::SimpleActionServer<flexible_manipulation_msgs::GetPlanningSceneAction>> action_server_;
 
-  bool getPlanningSceneService(moveit_msgs::GetPlanningScene::Request& req,
-                               moveit_msgs::GetPlanningScene::Response& res);
-
-  ros::ServiceServer get_scene_service_;
 };
 }
 

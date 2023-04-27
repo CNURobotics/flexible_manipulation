@@ -111,17 +111,17 @@ class StateValidationState(EventState):
             return self.return_code
 
         elif self.client.get_state(self.current_action_topic) == GoalStatus.ABORTED:
-            self.status_text = "StateValidation - %s request aborted by state validation action server\n %s" % (self.name, self.action_client.get_goal_status_text(self.current_action_topic))
+            #self.status_text = "StateValidation - %s request aborted by state validation action server\n %s" % (self.name, self.action_client.get_goal_status_text(self.current_action_topic))
             self.return_code = 'failed'
-            Logger.logerr(self.status_text)
+            #Logger.logerr(self.status_text)
             userdata.status_text = self.status_text
             return self.return_code
         elif self.client.get_state(self.current_action_topic) == GoalStatus.REJECTED:
             # No result returned is returned for this action, so go by the client state
             userdata.valid = self.valid
-            self.status_text = "StateValidation - %s request rejected by state validation action server" % (self.name, self.action_client.get_goal_status_text(self.current_action_topic))
+            #self.status_text = "StateValidation - %s request rejected by state validation action server" % (self.name, self.action_client.get_goal_status_text(self.current_action_topic))
             self.return_code = 'failed'
-            Logger.logerr(self.status_text)
+            #Logger.logerr(self.status_text)
             userdata.status_text = self.status_text
             return self.return_code
         elif self.timeout_target is not None and rospy.Time.now() > self.timeout_target:

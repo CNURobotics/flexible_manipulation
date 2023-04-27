@@ -4,13 +4,15 @@ import rospy
 
 from flexbe_core import EventState, Logger
 
-from flexbe_core.proxy import ProxyActionClient
+from flexbe_core.proxy import ProxyActionClient, ProxySubscriberCached
 
 from flexible_manipulation_msgs.msg import GetCartesianPathAction, GetCartesianPathGoal
 
 from moveit_msgs.msg import RobotState, Constraints, RobotTrajectory, MoveItErrorCodes
 
 from geometry_msgs.msg import Pose
+
+from sensor_msgs.msg import JointState
 
 from flexible_manipulation_flexbe_states.proxy import ProxyMoveItClient
 
@@ -39,7 +41,7 @@ class GetCartesianPathState(EventState):
 
     ># frame_id             string          Frame for specified waypoints
 
-    ># start_state          RobotState      State at which to start Cartesian path
+    >#           RobotState      State at which to start Cartesian path
 
     ># group_name           string          Mandatory name of group to compute the path for
 
@@ -59,15 +61,16 @@ class GetCartesianPathState(EventState):
 
     '''
 
-    def __init__(self, timeout=5.0, wait_duration=0.001, max_step= 1,jump_threshold=1, avoid_collision=True,action_topic=None):
+    def __init__(self, timeout=5.0, wait_duration=0.001, max_step= 1,jump_threshold=1, avoid_collision=True,action_topic=None, joint_states_topic="/m1n6s200_driver/joint_states"):
         '''
         Constructor
         '''
         super(GetCartesianPathState, self).__init__(
-            input_keys=['action_topic', 'header','start_state','group_name','link_name','waypoints'],
+            input_keys=['action_topic', 'frame_id', 'group_name','link_name','waypoints'],
             outcomes=['done', 'failed'],
-            output_keys=['trajectory','fraction', 'error_code'] )
+            output_keys=['trajectory','fraction', 'error_code', 'status_text'] )
 
+        self.moveit_client = ProxyMoveItClient()
         self.client = None
         self.timeout_duration = rospy.Duration(timeout)
         self.wait_duration = wait_duration
@@ -75,6 +78,9 @@ class GetCartesianPathState(EventState):
         self.jump_threshold = jump_threshold
         self.avoid_collision = avoid_collision
         self.given_action_topic  = action_topic
+        self._joints_topic = joint_states_topic
+        self._joints_topic_sub = ProxySubscriberCached({joint_states_topic: JointState})
+
         if (self.given_action_topic is not None) and (len(self.given_action_topic) > 0):
             # If topic is defined, set the client up on startup
             self.client = ProxyActionClient({self.given_action_topic: GetCartesianPathAction},
@@ -103,7 +109,7 @@ class GetCartesianPathState(EventState):
             result = self.client.get_result(self.current_action_topic)
             self.trajectory  = result.trajectory
             self.fraction    = result.fraction
-            self.status_text = " %s : %s" % (self.name, self.moveit_client.get_error_msg(result.error_code) )
+            self.status_text = " %s : %s" % (self.name, self.client.get_error_msg(result.error_code) )
             self.return_code = 'done'
         elif self.client.get_state(self.current_action_topic) == GoalStatus.ABORTED:
             # No result returned is returned for this action, so go by the client state
@@ -141,11 +147,12 @@ class GetCartesianPathState(EventState):
         # Retrieve the relevant data
         try :
             self.frame_id         = userdata.frame_id
-            self.start_state      = userdata.start_state
+            # self.start_state      = userdata.start_state
             self.group_name       = userdata.group_name
             self.link_name        = userdata.link_name
             self.waypoints        = userdata.waypoints
-            self.path_constraints = userdata.path_constraints
+            self.move_group       = userdata.group_name
+            # self.path_constraints = userdata.path_constraints
 
         except Exception as e:
             Logger.logwarn('Failed to set up the action client for %s - invalid user data parameters\n%s' % (self.name, str(e)))
@@ -169,25 +176,32 @@ class GetCartesianPathState(EventState):
 
         try:
             # Action Initialization
+            print("Setting up action goal")
             action_goal = GetCartesianPathGoal()
             # Fill out the action goal data structure
             action_goal.header.frame_id = self.frame_id
             action_goal.header.stamp = rospy.Time.now()
 
-            action_goal.group_name = self.move_group 
+            action_goal.group_name = self.move_group
             action_goal.link_name  = self.link_name
             action_goal.start_state = self.moveit_client.get_robot_start_state(self.move_group)
+
+            Logger.loginfo('Got start state')
 
             action_goal.waypoints = self.waypoints
             action_goal.max_step  = self.max_step
             action_goal.jump_threshold = self.jump_threshold
             action_goal.avoid_collisions = self.avoid_collision
 
-            action_goal.path_constraints.joint_constraints    =  self.moveit_client._joint_constraints[   self.move_group]
+            action_goal.path_constraints.joint_constraints    =  self.moveit_client._joint_constraints[self.move_group]
+            print('Got joint constraints')
+
             action_goal.path_constraints.position_constraints =  self.moveit_client._position_constraints[self.move_group]
+            print('Got position constraints')
 
+            self.moveit_client.send_goal(self.current_action_topic, action_goal)
+            print('Sent goal')
 
-            self.client.send_goal(self.current_action_topic, action_goal)
             self.timeout_target = rospy.Time.now() + self.timeout_duration
 
         except Exception as e:
@@ -197,17 +211,17 @@ class GetCartesianPathState(EventState):
 
     def on_stop(self):
             try:
-                if ( self.client.is_available(self.current_action_topic) \
-                     and not self.client.has_result(self.current_action_topic) ):
+                if ( self.moveit_client.is_available(self.current_action_topic) \
+                     and not self.moveit_client.has_result(self.current_action_topic) ):
                     # Cancel any active goals
-                    self.client.cancel(self.current_action_topic)
+                    self.moveit_client.cancel(self.current_action_topic)
             except Exception as e:
                 # client already closed
                 Logger.logwarn('Action client already closed - %s\n%s' % (self.current_action_topic, str(e)))
 
     def on_pause(self):
         try:
-            self.client.cancel(self.current_action_topic)
+            self.moveit_client.cancel(self.current_action_topic)
         except Exception as e:
             # client already closed
             Logger.logwarn('Action client already closed - %s\n%s' % (self.current_action_topic, str(e)))

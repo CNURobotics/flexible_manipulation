@@ -40,17 +40,19 @@
 /* Author: Ioan Sucan, David Conner, Julie Gates, and Jenny Gu */
 
 #include "kinematics_capability.h"
-#include <eigen_conversions/eigen_msg.h>
+#include <tf2_eigen/tf2_eigen.h>
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit/move_group/capability_names.h>
 #include <moveit/robot_state/conversions.h>
 
-flexible_manipulation::KinematicsCapability::KinematicsCapability()
-  : move_group::MoveGroupCapability("KinematicsCapability")
+namespace flexible_manipulation
+{
+  KinematicsCapability::KinematicsCapability()
+    : move_group::MoveGroupCapability("KinematicsCapability")
 {
 }
 
-void flexible_manipulation::KinematicsCapability::initialize()
+void KinematicsCapability::initialize()
 {
   fk_service_ = root_node_handle_.advertiseService(
       move_group::FK_SERVICE_NAME, &flexible_manipulation::KinematicsCapability::computeFKService, this);
@@ -114,7 +116,7 @@ void flexible_manipulation::KinematicsCapability::executeGetPositionFKCallback(
   get_fk_action_server_->setSucceeded(res, "");
 }
 
-void flexible_manipulation::KinematicsCapability::computeIK(
+void KinematicsCapability::computeIK(
     moveit_msgs::PositionIKRequest& req, moveit_msgs::RobotState& solution, moveit_msgs::MoveItErrorCodes& error_code,
     robot_state::RobotState& rs, const robot_state::GroupStateValidityCallbackFn& constraint) const
 {
@@ -137,11 +139,11 @@ void flexible_manipulation::KinematicsCapability::computeIK(
         bool result_ik = false;
         if (ik_link.empty())
         {
-          result_ik = rs.setFromIK(jmg, req_pose.pose, req.attempts, req.timeout.toSec(), constraint);
+          result_ik = rs.setFromIK(jmg, req_pose.pose, req.timeout.toSec(), constraint);
         }
         else
         {
-          result_ik = rs.setFromIK(jmg, req_pose.pose, ik_link, req.attempts, req.timeout.toSec(), constraint);
+          result_ik = rs.setFromIK(jmg, req_pose.pose, ik_link, req.timeout.toSec(), constraint);
         }
 
         if (result_ik)
@@ -168,13 +170,13 @@ void flexible_manipulation::KinematicsCapability::computeIK(
       else
       {
         bool ok = true;
-        EigenSTL::vector_Affine3d req_poses(req.pose_stamped_vector.size());
+        EigenSTL::vector_Isometry3d req_poses(req.pose_stamped_vector.size());
         for (std::size_t k = 0; k < req.pose_stamped_vector.size(); ++k)
         {
           geometry_msgs::PoseStamped msg = req.pose_stamped_vector[k];
           if (performTransform(msg, default_frame))
           {
-            tf::poseMsgToEigen(msg.pose, req_poses[k]);
+            tf2::fromMsg(msg.pose, req_poses[k]);
           }
           else
           {
@@ -185,7 +187,7 @@ void flexible_manipulation::KinematicsCapability::computeIK(
         }
         if (ok)
         {
-          if (rs.setFromIK(jmg, req_poses, req.ik_link_names, req.attempts, req.timeout.toSec(), constraint))
+          if (rs.setFromIK(jmg, req_poses, req.ik_link_names, req.timeout.toSec(), constraint))
           {
             robot_state::robotStateToRobotStateMsg(rs, solution, false);
             error_code.val = moveit_msgs::MoveItErrorCodes::SUCCESS;
@@ -204,7 +206,7 @@ void flexible_manipulation::KinematicsCapability::computeIK(
   }
 }
 
-bool flexible_manipulation::KinematicsCapability::computeIKService(moveit_msgs::GetPositionIK::Request& req,
+bool KinematicsCapability::computeIKService(moveit_msgs::GetPositionIK::Request& req,
                                                                    moveit_msgs::GetPositionIK::Response& res)
 {
   context_->planning_scene_monitor_->updateFrameTransforms();
@@ -234,12 +236,12 @@ bool flexible_manipulation::KinematicsCapability::computeIKService(moveit_msgs::
   return true;
 }
 
-bool flexible_manipulation::KinematicsCapability::computeFKService(moveit_msgs::GetPositionFK::Request& req,
+bool KinematicsCapability::computeFKService(moveit_msgs::GetPositionFK::Request& req,
                                                                    moveit_msgs::GetPositionFK::Response& res)
 {
   if (req.fk_link_names.empty())
   {
-    ROS_ERROR("No links specified for FK request");
+    ROS_ERROR_NAMED(getName(), "No links specified for FK request");
     res.error_code.val = moveit_msgs::MoveItErrorCodes::INVALID_LINK_NAME;
     return true;
   }
@@ -260,7 +262,7 @@ bool flexible_manipulation::KinematicsCapability::computeFKService(moveit_msgs::
     if (rs.getRobotModel()->hasLinkModel(req.fk_link_names[i]))
     {
       res.pose_stamped.resize(res.pose_stamped.size() + 1);
-      tf::poseEigenToMsg(rs.getGlobalLinkTransform(req.fk_link_names[i]), res.pose_stamped.back().pose);
+      res.pose_stamped.back().pose = tf2::toMsg(rs.getGlobalLinkTransform(req.fk_link_names[i]));
       res.pose_stamped.back().header.frame_id = default_frame;
       res.pose_stamped.back().header.stamp = ros::Time::now();
       if (do_transform)
@@ -287,6 +289,7 @@ bool flexible_manipulation::KinematicsCapability::computeFKService(moveit_msgs::
   }
   return true;
 }
+}  // namespace flexible_manipulation
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::KinematicsCapability, move_group::MoveGroupCapability)

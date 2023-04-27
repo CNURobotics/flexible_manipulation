@@ -157,14 +157,14 @@ static bool setJointModelGroupFromIk(robot_state::RobotState& state, const robot
                                       redundant_joints_vector);
   }
 
-  Eigen::Affine3d mat;
+  Eigen::Isometry3d mat;
   tf::poseMsgToEigen(goal_pose, mat);
 
   bool success = false;
 
   if (redundant_joints_vector.size() == 0)
   {
-    success = state.setFromIK(group, mat, tip_frame, consistency_limits, 1, 0.1, group_state_validity_cb);
+    success = state.setFromIK(group, mat, tip_frame, consistency_limits, 0.1, group_state_validity_cb);
     // std::cout << "zero redundant\n";
   }
   else
@@ -181,7 +181,7 @@ static bool setJointModelGroupFromIk(robot_state::RobotState& state, const robot
 
     kinematics::KinematicsQueryOptions options;
     options.lock_redundant_joints = true;
-    success = state.setFromIK(&group_cpy, mat, tip_frame, consistency_limits, 1, 0.1, group_state_validity_cb, options);
+    success = state.setFromIK(&group_cpy, mat, tip_frame, consistency_limits, 0.1, group_state_validity_cb, options);
 
     // Reset redundant joints to make sure we don't alter solver settings
     redundant_joints_vector.clear();

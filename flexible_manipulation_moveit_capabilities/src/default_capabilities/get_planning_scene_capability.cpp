@@ -42,24 +42,23 @@
 #include "get_planning_scene_capability.h"
 #include <moveit/move_group/capability_names.h>
 
-flexible_manipulation::GetPlanningSceneCapability::GetPlanningSceneCapability()
-  : move_group::MoveGroupCapability("GetPlanningSceneCapability")
+namespace flexible_manipulation
+{
+  GetPlanningSceneCapability::GetPlanningSceneCapability()
+    : move_group::MoveGroupCapability("GetPlanningSceneCapability")
 {
 }
 
-void flexible_manipulation::GetPlanningSceneCapability::initialize()
+void GetPlanningSceneCapability::initialize()
 {
-  get_scene_service_ = root_node_handle_.advertiseService(
-      move_group::GET_PLANNING_SCENE_SERVICE_NAME,
-      &flexible_manipulation::GetPlanningSceneCapability::getPlanningSceneService, this);
-
   action_server_.reset(new actionlib::SimpleActionServer<flexible_manipulation_msgs::GetPlanningSceneAction>(
       root_node_handle_, move_group::GET_PLANNING_SCENE_SERVICE_NAME,
       boost::bind(&flexible_manipulation::GetPlanningSceneCapability::executeCallback, this, _1), false));
   action_server_->start();
+  context_->planning_scene_monitor_->providePlanningSceneService(move_group::GET_PLANNING_SCENE_SERVICE_NAME);
 }
 
-void flexible_manipulation::GetPlanningSceneCapability::executeCallback(
+void GetPlanningSceneCapability::executeCallback(
     const flexible_manipulation_msgs::GetPlanningSceneGoalConstPtr& goal)
 {
   flexible_manipulation_msgs::GetPlanningSceneResult res;
@@ -80,17 +79,7 @@ void flexible_manipulation::GetPlanningSceneCapability::executeCallback(
   return;
 }
 
-bool flexible_manipulation::GetPlanningSceneCapability::getPlanningSceneService(
-    moveit_msgs::GetPlanningScene::Request& req, moveit_msgs::GetPlanningScene::Response& res)
-{
-  if ((req.components.components & moveit_msgs::PlanningSceneComponents::TRANSFORMS) != 0u)
-  {
-    context_->planning_scene_monitor_->updateFrameTransforms();
-  }
-  planning_scene_monitor::LockedPlanningSceneRO ps(context_->planning_scene_monitor_);
-  ps->getPlanningSceneMsg(res.scene, req.components);
-  return true;
-}
+}  // namespace flexible_manipulation
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::GetPlanningSceneCapability, move_group::MoveGroupCapability)

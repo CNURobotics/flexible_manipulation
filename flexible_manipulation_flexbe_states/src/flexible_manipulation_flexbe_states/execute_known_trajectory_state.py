@@ -113,7 +113,7 @@ class ExecuteKnownTrajectoryState(EventState):
                 self.status_text = 'ExecuteKnownTrajectory %s failed ' % self.name
                 self.return_code = 'failed'
 
-            Logger.loginfo('ExecuteKnownTrajectory result for %s - %s\n%s' % (self.name, self.status_text, str(self.action_client.get_goal_status_text(self.current_action_topic))))
+            #Logger.loginfo('ExecuteKnownTrajectory result for %s - %s\n%s' % (self.name, self.status_text, str(self.action_client.get_goal_status_text(self.current_action_topic))))
 
             userdata.status_text = self.status_text
             userdata.goal_names  = self.goal_names

@@ -72,7 +72,7 @@ static bool get_eef_link(const std::string group_name, std::string& eef_link)
 
 static bool getEndeffectorTransformOfLink(const std::string& eef_link_name,
                                           const planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor,
-                                          Eigen::Affine3d& transform)
+                                          Eigen::Isometry3d& transform)
 {
   planning_scene_monitor::LockedPlanningSceneRO lscene(planning_scene_monitor);
   const robot_state::RobotState& curr_state = lscene.getPlanningSceneMonitor()->getPlanningScene()->getCurrentState();
@@ -83,7 +83,7 @@ static bool getEndeffectorTransformOfLink(const std::string& eef_link_name,
 
 static bool getEndeffectorTransform(const std::string& group_name,
                                     const planning_scene_monitor::PlanningSceneMonitorPtr planning_scene_monitor,
-                                    Eigen::Affine3d& transform)
+                                    Eigen::Isometry3d& transform )
 {
   std::string start_pose_link;
   if (!get_eef_link(group_name, start_pose_link))

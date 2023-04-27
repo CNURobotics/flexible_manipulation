@@ -4,10 +4,8 @@ class: GetJointNamesFromMoveGroupState
 import_only: false
 
 input:
-    selected_move_group : arm
+    move_group : arm
     robot_name : kinova
 
 outcome:
-    # We expect this to fail if running stand alone
-    # without having anything to connect to
-    param_error  # If we first setup the proxy
+    retrieved  # If we first setup the proxy

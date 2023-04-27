@@ -43,8 +43,11 @@
 /* Author: Ioan Sucan, Kentaro Wada, and David Conner */
 
 #include "execute_known_trajectory_capability.h"
+#include "tf2/LinearMath/Transform.h"
 #include <moveit/move_group/capability_names.h>
 #include <moveit/trajectory_execution_manager/trajectory_execution_manager.h>
+
+#include <tf2_eigen/tf2_eigen.h>
 
 namespace flexible_manipulation
 {
@@ -69,13 +72,18 @@ void ExecuteKnownTrajectoryCapability::initialize()
   // execution of the main spinner thread.
   // Hence, we use our own asynchronous spinner listening to our own callback
   // queue.
-  ros::AdvertiseServiceOptions ops;
-  ops.template init<moveit_msgs::ExecuteKnownTrajectory::Request, moveit_msgs::ExecuteKnownTrajectory::Response>(
-      move_group::EXECUTE_SERVICE_NAME,
-      boost::bind(&ExecuteKnownTrajectoryCapability::executeTrajectoryService, this, _1, _2));
-  ops.callback_queue = &callback_queue_;
-  execute_service_ = root_node_handle_.advertiseService(ops);
-  spinner_.start();
+
+  // Service deprecated in MoveIt melodic ( commit 45d3c24583d27d1593c414f838487de33576bbb1)
+  // Only execute action now.
+  // Make this consistent
+  // commenting this block out for compile, but needs more review (dcc 28-July-20)
+  //ros::AdvertiseServiceOptions ops;
+  //ops.template init<moveit_msgs::ExecuteKnownTrajectory::Request, moveit_msgs::ExecuteKnownTrajectory::Response>(
+  //    EXECUTE_SERVICE_NAME,
+  //    boost::bind(&ExecuteKnownTrajectoryCapability::executeTrajectoryService, this, _1, _2));
+  //ops.callback_queue = &callback_queue_;
+  //execute_service_ = root_node_handle_.advertiseService(ops);
+  //spinner_.start();
 
   // start the move action server
   execute_action_server_.reset(

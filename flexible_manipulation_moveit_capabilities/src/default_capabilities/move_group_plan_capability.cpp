@@ -43,12 +43,14 @@
 #include <moveit/move_group/capability_names.h>
 #include <moveit/planning_pipeline/planning_pipeline.h>
 
-flexible_manipulation::MoveGroupPlanCapability::MoveGroupPlanCapability()
-  : move_group::MoveGroupCapability("MoveGroupPlanCapability")
+namespace flexible_manipulation
+{
+  MoveGroupPlanCapability::MoveGroupPlanCapability()
+    : move_group::MoveGroupCapability("MoveGroupPlanCapability")
 {
 }
 
-void flexible_manipulation::MoveGroupPlanCapability::initialize()
+void MoveGroupPlanCapability::initialize()
 {
   plan_service_ = root_node_handle_.advertiseService(
       move_group::PLANNER_SERVICE_NAME, &flexible_manipulation::MoveGroupPlanCapability::computePlanService, this);
@@ -61,12 +63,12 @@ void flexible_manipulation::MoveGroupPlanCapability::initialize()
 }
 
 // Action interface makes use of the service interface
-void flexible_manipulation::MoveGroupPlanCapability::executeCallback(
+void MoveGroupPlanCapability::executeCallback(
     const flexible_manipulation_msgs::GetMotionPlanGoalConstPtr& goal)
 {
   flexible_manipulation_msgs::GetMotionPlanResult action_res;
 
-  ROS_INFO("Received new planning action request...");
+  ROS_INFO_NAMED(getName(), "Received new planning action request...");
   // before we start planning, ensure that we have the latest robot state
   // received...
   context_->planning_scene_monitor_->waitForCurrentRobotState(ros::Time::now());
@@ -82,7 +84,7 @@ void flexible_manipulation::MoveGroupPlanCapability::executeCallback(
   }
   catch (std::exception& ex)
   {
-    ROS_ERROR("Planning pipeline threw an exception: %s", ex.what());
+    ROS_ERROR_NAMED(getName(), "Planning pipeline threw an exception: %s", ex.what());
     action_res.motion_plan_response.error_code.val = moveit_msgs::MoveItErrorCodes::FAILURE;
   }
 
@@ -96,10 +98,10 @@ void flexible_manipulation::MoveGroupPlanCapability::executeCallback(
   }
 }
 
-bool flexible_manipulation::MoveGroupPlanCapability::computePlanService(moveit_msgs::GetMotionPlan::Request& req,
+bool MoveGroupPlanCapability::computePlanService(moveit_msgs::GetMotionPlan::Request& req,
                                                                         moveit_msgs::GetMotionPlan::Response& res)
 {
-  ROS_INFO("Received new planning service request...");
+  ROS_INFO_NAMED(getName(), "Received new planning service request...");
   // before we start planning, ensure that we have the latest robot state
   // received...
   context_->planning_scene_monitor_->waitForCurrentRobotState(ros::Time::now());
@@ -115,12 +117,13 @@ bool flexible_manipulation::MoveGroupPlanCapability::computePlanService(moveit_m
   }
   catch (std::exception& ex)
   {
-    ROS_ERROR("Planning pipeline threw an exception: %s", ex.what());
+    ROS_ERROR_NAMED(getName(), "Planning pipeline threw an exception: %s", ex.what());
     res.motion_plan_response.error_code.val = moveit_msgs::MoveItErrorCodes::FAILURE;
   }
 
   return true;
 }
+} // end of namespace
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::MoveGroupPlanCapability, move_group::MoveGroupCapability)

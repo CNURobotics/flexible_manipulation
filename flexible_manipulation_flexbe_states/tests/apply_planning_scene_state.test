@@ -12,6 +12,4 @@ input:
   action_topic : "apply_planning_scene"
 
 outcome:
-    # We expect this to fail if running stand alone
-    # without having anything to connect to
-    failed
+    done

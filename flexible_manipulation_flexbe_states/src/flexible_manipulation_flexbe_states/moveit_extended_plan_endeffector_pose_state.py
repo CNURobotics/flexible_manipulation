@@ -2,6 +2,12 @@
 
 import rospy
 
+from geometry_msgs.msg import Point
+from geometry_msgs.msg import Quaternion
+from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import Header
+
 from flexbe_core import EventState, Logger
 from flexible_manipulation_flexbe_states.proxy import ProxyMoveItClient
 
@@ -52,13 +58,14 @@ class MoveItPlanEndeffectorPoseState(EventState):
         self.return_code = None
         self.planner_id = planner_id
 
-        Logger.logerr("The MoveItPlanEndeffectorPoseState is out of whack")
-        throw "The MoveItPlanEndeffectorPoseState is out of whack"
+        # Logger.logerr("The MoveItPlanEndeffectorPoseState is out of whack")
+        # throw "The MoveItPlanEndeffectorPoseState is out of whack"
 
     def execute(self, userdata):
         '''
         Execute this state
         '''
+
         if self.return_code is not None:
             return self.return_code
 
@@ -75,6 +82,21 @@ class MoveItPlanEndeffectorPoseState(EventState):
 
 
     def on_enter(self, userdata):
+
+        print(" Userdata in: ", userdata)
+        target_pose = PoseStamped()
+        header = Header()
+        header.stamp = rospy.Time.now()
+        header.frame_id = 'jackal/map'
+        target_pose.header = header
+        target_pose.pose.position = Point(0, 0, 0.5)
+        target_pose.pose.orientation = Quaternion(0, 0, 0, 1)
+        print(" pose = ", target_pose)
+        #userdata["target_pose"] = pose_stamped
+        #print(" Userdata out: ", userdata)
+
+
+
         if not hasattr(userdata, 'target_pose') or userdata.target_pose is None:
             self.return_code = 'param_error'
             Logger.logwarn('Userdata "target_pose" of state %s does not exist or is currently undefined!' % self.name)
@@ -89,7 +111,7 @@ class MoveItPlanEndeffectorPoseState(EventState):
         try:
             # create the motion goal
             self.client.new_goal(userdata.move_group)
-            self.client.add_endeffector_pose(userdata.target_pose.pose, userdata.target_pose.header.frame_id)
+            self.client.add_endeffector_pose(target_pose.pose, target_pose.header.frame_id)
             self.client.set_collision_avoidance(self.ignore_collisions)
             self.client.set_planner_id(self.planner_id)
 
@@ -99,7 +121,7 @@ class MoveItPlanEndeffectorPoseState(EventState):
             # for later use
             #for link, target in self.allowed_collisions:
 
-            Logger.loginfo('Sending planning request to reach point (%f, %f, %f) in frame %s...' % (userdata.target_pose.pose.position.x, userdata.target_pose.pose.position.y, userdata.target_pose.pose.position.z, userdata.target_pose.header.frame_id))
+            Logger.loginfo('Sending planning request to reach point (%f, %f, %f) in frame %s...' % (target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z, target_pose.header.frame_id))
             self.client.start_planning()
 
         except Exception as e:

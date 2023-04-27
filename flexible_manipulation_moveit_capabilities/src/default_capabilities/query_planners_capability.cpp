@@ -44,12 +44,14 @@
 #include <moveit/move_group/capability_names.h>
 #include <moveit/planning_pipeline/planning_pipeline.h>
 
-flexible_manipulation::QueryPlannersCapability::QueryPlannersCapability()
-  : move_group::MoveGroupCapability("QueryPlannersCapability")
+namespace flexible_manipulation
+{
+  QueryPlannersCapability::QueryPlannersCapability()
+    : move_group::MoveGroupCapability("QueryPlannersCapability")
 {
 }
 
-void flexible_manipulation::QueryPlannersCapability::initialize()
+void QueryPlannersCapability::initialize()
 {
   query_service_ = root_node_handle_.advertiseService(
       move_group::QUERY_PLANNERS_SERVICE_NAME, &flexible_manipulation::QueryPlannersCapability::queryInterface, this);
@@ -65,7 +67,7 @@ void flexible_manipulation::QueryPlannersCapability::initialize()
   action_server_->start();
 }
 
-void flexible_manipulation::QueryPlannersCapability::executeCallback(
+void QueryPlannersCapability::executeCallback(
     const flexible_manipulation_msgs::QueryPlannersGoalConstPtr& /*goal*/)
 {
   flexible_manipulation_msgs::QueryPlannersResult res;
@@ -90,7 +92,7 @@ void flexible_manipulation::QueryPlannersCapability::executeCallback(
   }
 }
 
-bool flexible_manipulation::QueryPlannersCapability::queryInterface(
+bool QueryPlannersCapability::queryInterface(
     moveit_msgs::QueryPlannerInterfaces::Request& /*req*/, moveit_msgs::QueryPlannerInterfaces::Response& res)
 {
   const planning_interface::PlannerManagerPtr& planner_interface = context_->planning_pipeline_->getPlannerManager();
@@ -106,7 +108,7 @@ bool flexible_manipulation::QueryPlannersCapability::queryInterface(
   return true;
 }
 
-bool flexible_manipulation::QueryPlannersCapability::getParams(moveit_msgs::GetPlannerParams::Request& req,
+bool QueryPlannersCapability::getParams(moveit_msgs::GetPlannerParams::Request& req,
                                                                moveit_msgs::GetPlannerParams::Response& res)
 {
   const planning_interface::PlannerManagerPtr& planner_interface = context_->planning_pipeline_->getPlannerManager();
@@ -140,7 +142,7 @@ bool flexible_manipulation::QueryPlannersCapability::getParams(moveit_msgs::GetP
   return true;
 }
 
-bool flexible_manipulation::QueryPlannersCapability::setParams(moveit_msgs::SetPlannerParams::Request& req,
+bool QueryPlannersCapability::setParams(moveit_msgs::SetPlannerParams::Request& req,
                                                                moveit_msgs::SetPlannerParams::Response& /*res*/)
 {
   const planning_interface::PlannerManagerPtr& planner_interface = context_->planning_pipeline_->getPlannerManager();
@@ -170,6 +172,7 @@ bool flexible_manipulation::QueryPlannersCapability::setParams(moveit_msgs::SetP
   }
   return true;
 }
+}  // namespace flexible_manipulation
 
 #include <class_loader/class_loader.hpp>
 CLASS_LOADER_REGISTER_CLASS(flexible_manipulation::QueryPlannersCapability, move_group::MoveGroupCapability)

@@ -101,7 +101,7 @@ class UserDataToMoveActionState(EventState):
         if self.client.has_result(self.current_action_topic):
             result = self.client.get_result(self.current_action_topic)
 
-            Logger.loginfo('Move Group  - %s' % str(self.client.get_goal_status_text(self.current_action_topic)))
+            # Logger.loginfo('Move Group  - %s' % str(self.client.get_goal_status_text(self.current_action_topic)))
 
             if result.error_code.val == MoveItErrorCodes.SUCCESS:
                 self.status_text  = 'Move Group success for group %s (error code - %s)' % (self.move_group, str(result.error_code))

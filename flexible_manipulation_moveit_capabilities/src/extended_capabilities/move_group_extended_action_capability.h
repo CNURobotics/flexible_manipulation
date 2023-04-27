@@ -48,6 +48,8 @@
 #include <flexible_manipulation_moveit_capabilities/helper/continuous_plan_execution.h>
 #include <moveit_msgs/GetCartesianPath.h>
 
+#include "tf2_ros/transform_listener.h"
+
 namespace flexible_manipulation
 {
 class MoveGroupExtendedAction : public move_group::MoveGroupCapability
@@ -55,7 +57,7 @@ class MoveGroupExtendedAction : public move_group::MoveGroupCapability
 public:
   MoveGroupExtendedAction();
 
-  virtual void initialize();
+  void initialize() override;
 
 private:
   bool checkGroupStateSelfCollisionFree(robot_state::RobotState* robot_state,
@@ -103,7 +105,7 @@ private:
   ros::Publisher trajectory_result_display_pub_;
   ros::Publisher circular_target_path_pub_;
 
-  tf::TransformListener transform_listener_;
+  // tf2_ros::TransformListener transform_listener_;
 
   boost::shared_ptr<trajectory_processing::IterativeParabolicTimeParameterization> time_param_;
 
