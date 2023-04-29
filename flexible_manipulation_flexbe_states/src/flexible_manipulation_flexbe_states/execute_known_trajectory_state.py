@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import copy
 import rospy
 
 from flexbe_core import EventState, Logger
@@ -179,7 +180,7 @@ class ExecuteKnownTrajectoryState(EventState):
         try:
             # Action Initialization
             action_goal = ExecuteKnownTrajectoryGoal()
-            action_goal.trajectory = userdata.trajectory
+            action_goal.trajectory = copy.deepcopy(userdata.trajectory)
 
             # Check that our trajectory is still fresh
             elapsed = rospy.Time.now() - action_goal.trajectory.joint_trajectory.header.stamp
