@@ -290,13 +290,13 @@ class ProxyMoveItClient(object):
         @param wait_duration: Defines how long to wait for the given client if it is not available right now.
         """
         if action_topics is not None:
-            print "ProxyMoveItClient: setup_multiple_action_clients ..."
+            print("ProxyMoveItClient: setup_multiple_action_clients ...")
             for action_type, topics in action_topics:
-                print "Action type: ",action_type," : ",topics
+                print("Action type: ",action_type," : ",topics)
                 for topic in topics:
                     self.setup_action_client(topic, action_type, wait_duration)
         else:
-            print "ProxyMoveItClient: no additional action clients"
+            print("ProxyMoveItClient: no additional action clients")
 
     def setup_action_client(self, action_topic, action_type, wait_duration):
         """
@@ -462,7 +462,7 @@ class ProxyMoveItClient(object):
             else:
                 raise Exception(" Failed to reset dictionary for any relevant topic for move_group=(%s) !" % (str(move_group)))
 
-        elif bool(move_group) and all([isinstance(elem,basestring) for elem in move_group]):
+        elif bool(move_group) and all([isinstance(elem,str) for elem in move_group]):
             # List of strings
             for group in move_group:
                 try:
@@ -507,7 +507,7 @@ class ProxyMoveItClient(object):
             else:
                 raise Exception(" Failed to reset planning options for any relevant topic for move_group=(%s) !" % (str(move_group)))
 
-        elif bool(move_group) and all([isinstance(elem,basestring) for elem in move_group]):
+        elif bool(move_group) and all([isinstance(elem,str) for elem in move_group]):
             # List of strings
             for group in move_group:
                 try:
@@ -552,7 +552,7 @@ class ProxyMoveItClient(object):
             else:
                 raise Exception(" Failed to reset joint constraints for any relevant topic for move_group=(%s) !" % (str(move_group)))
 
-        elif bool(move_group) and all([isinstance(elem,basestring) for elem in move_group]):
+        elif bool(move_group) and all([isinstance(elem,str) for elem in move_group]):
             # List of strings
             for group in move_group:
                 try:

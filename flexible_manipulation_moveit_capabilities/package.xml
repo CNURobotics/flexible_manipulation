@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>flexible_manipulation_moveit_capabilities</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>The flexible_manipulation_moveit_capabilities package provides custom move_group pluigins.
 
     The capabilities are based on functionality provided by the vigir_move_group package

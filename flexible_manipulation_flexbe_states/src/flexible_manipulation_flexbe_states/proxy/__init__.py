@@ -1,2 +1,2 @@
-from proxy_moveit_client import ProxyMoveItClient
+from .proxy_moveit_client import ProxyMoveItClient
 #from proxy_moveit_extended_client import ProxyMoveItExtendedClient

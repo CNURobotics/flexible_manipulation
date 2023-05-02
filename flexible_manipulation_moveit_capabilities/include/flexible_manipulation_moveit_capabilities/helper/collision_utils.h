@@ -55,7 +55,7 @@ void setAllowedCollisions(const std::vector<std::string>& links_vector, const pl
 {
   collision_detection::AllowedCollisionMatrix& acm = ps->getAllowedCollisionMatrixNonConst();
 
-  std::vector<std::string> object_strings = ps->getCollisionWorld()->getWorld()->getObjectIds();
+  std::vector<std::string> object_strings = ps->getCollisionEnv()->getWorld()->getObjectIds();
 
   size_t size = object_strings.size();
 

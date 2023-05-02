@@ -13,4 +13,4 @@ input:
   components : None
 
 outcome:
-    done
+    failed

@@ -12,4 +12,4 @@ params:
     wait_duration         : 0.5
 
 outcome:
-    planning_failed
+    param_error

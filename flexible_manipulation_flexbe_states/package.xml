@@ -1,6 +1,6 @@
 <package format="2">
   <name>flexible_manipulation_flexbe_states</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>
      flexible_manipulation_flexbe_states provides a collection of robot-agnostic
      states related to manipulation and trajectory execution.
@@ -19,6 +19,7 @@
   <depend>flexible_manipulation_msgs</depend>
   <depend>flexible_manipulation_moveit_capabilities</depend>
   <depend>sensor_msgs</depend>
+  <depend>moveit_commander</depend>
 
   <export>
     <flexbe_states />

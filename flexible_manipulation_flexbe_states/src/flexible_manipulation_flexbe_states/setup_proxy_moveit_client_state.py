@@ -70,7 +70,7 @@ class SetupProxyMoveItClientState(EventState):
 
                         for group in groups:
                             move_group_capabilities[group] = topic
-                    print "Associated MoveGroup capabilities:",move_group_capabilities
+                    print("Associated MoveGroup capabilities:",move_group_capabilities)
                 except Exception as e:
                     Logger.logerr("SetupProxyMoveItClient - failed!\n %s" % (str(e)))
                     Logger.logerr("    Failed to process list of capability/move group names ")
@@ -135,7 +135,7 @@ class SetupProxyMoveItClientState(EventState):
           for group in self.client._move_group_clients_:
             action_topic = self.client._move_group_clients_[group]
             ret = self.client.is_available(action_topic)
-            print "            ",action_topic," ",ret
+            print("            ",action_topic," ",ret)
             if not ret:
                 ret = self.client.setup_action_client(action_topic, "MoveGroupAction", self.enter_wait_duration)
                 if not ret:
@@ -148,10 +148,10 @@ class SetupProxyMoveItClientState(EventState):
           if self.action_type_and_topics is not None:
             Logger.loginfo("SetupProxyMoveItClient - verify additional Action server connections ... ")
             for action_type, action_topics in self.action_type_and_topics:
-                print "     Action type: ", action_type, "  topics: ",action_topics
+                print("     Action type: ", action_type, "  topics: ",action_topics)
                 for action_topic in action_topics:
                     ret = self.client.is_available(action_topic)
-                    print "            ",action_topic," ",ret
+                    print("            ",action_topic," ",ret)
                     if not ret:
                         ret = self.client.setup_action_client(action_topic, action_type, self.enter_wait_duration)
                         if not ret:

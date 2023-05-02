@@ -32,7 +32,7 @@ add this repo to your Catkin workspace.
 License
 -------
 
-Copyright (c) 2018
+Copyright (c) 2018-2023
 Capable Humanitarian Robotics and Intelligent Systems Lab (CHRISLab)
 Christopher Newport University
 

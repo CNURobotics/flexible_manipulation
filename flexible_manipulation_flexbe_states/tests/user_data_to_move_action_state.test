@@ -16,4 +16,4 @@ input:
   joint_names : ["joint1", "joint2"]
 
 outcome:
-    planning_failed
+    param_error

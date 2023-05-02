@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2018
+ *  Copyright (c) 2018-2023
  *  Capable Humanitarian Robotics and Intelligent Systems Lab (CHRISLab)
  *  Christopher Newport University
  *
@@ -47,6 +47,7 @@
 #include <moveit/planning_pipeline/planning_pipeline.h>
 #include <moveit/robot_state/conversions.h>
 #include <moveit/trajectory_processing/iterative_time_parameterization.h>
+#include <moveit/utils/message_checks.h>
 #include <moveit_msgs/DisplayTrajectory.h>
 
 bool isStateValid(const planning_scene::PlanningScene* planning_scene,
@@ -155,7 +156,7 @@ bool GetCartesianPathCapability::computeService(moveit_msgs::GetCartesianPath::R
         p.pose = req.waypoints[i];
         if (performTransform(p, default_frame))
         {
-          tf2::fromMsg(p.pose, waypoints[i]);  
+          tf2::fromMsg(p.pose, waypoints[i]);
         }
         else
         {
@@ -182,7 +183,7 @@ bool GetCartesianPathCapability::computeService(moveit_msgs::GetCartesianPath::R
           robot_state::GroupStateValidityCallbackFn constraint_fn;
           std::unique_ptr<planning_scene_monitor::LockedPlanningSceneRO> ls;
           std::unique_ptr<kinematic_constraints::KinematicConstraintSet> kset;
-          if ((req.avoid_collisions != 0u) || !kinematic_constraints::isEmpty(req.path_constraints))
+          if ((req.avoid_collisions != 0u) || !moveit::core::isEmpty(req.path_constraints))
           {
             ls.reset(new planning_scene_monitor::LockedPlanningSceneRO(context_->planning_scene_monitor_));
             kset.reset(new kinematic_constraints::KinematicConstraintSet((*ls)->getRobotModel()));

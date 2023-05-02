@@ -202,7 +202,9 @@ void ContinuousPlanExecution::continuousReplanningThread()
       mp_res->trajectory_->getRobotTrajectoryMsg(robot_traj);
       robot_traj.joint_trajectory.header.stamp = start_stamp;
 
-      context_->trajectory_execution_manager_->pushAndExecute(robot_traj);
+      //context_->trajectory_execution_manager_->pushAndExecute(robot_traj); //deprecated in Noetic https://github.com/ros-planning/moveit/issues/3252
+      ROS_ERROR("pushAndExecute - deprecated in Noetic https://github.com/ros-planning/moveit/issues/3252");
+      throw "pushAndExecute - deprecated in Noetic https://github.com/ros-planning/moveit/issues/3252";
       mp_res_prior = mp_res;
 
       traj_vis_->publishTrajectoryEndeffectorVis(*mp_res->trajectory_);

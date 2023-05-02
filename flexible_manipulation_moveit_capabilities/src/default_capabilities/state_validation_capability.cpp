@@ -4,7 +4,7 @@
  *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
- * Copyright (c) 2018
+ * Copyright (c) 2018-2023
  * Capable Humanitarian Robotics and Intelligent Systems Lab (CHRISLab)
  * Christopher Newport University
  *
@@ -44,6 +44,7 @@
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit/move_group/capability_names.h>
 #include <moveit/robot_state/conversions.h>
+#include <moveit/utils/message_checks.h>
 
 namespace flexible_manipulation
 {
@@ -120,7 +121,7 @@ void StateValidationCapability::executeCallback(
   }
 
   // evaluate constraints
-  if (!kinematic_constraints::isEmpty(goal->constraints))
+  if (!moveit::core::isEmpty(goal->constraints))
   {
     kinematic_constraints::KinematicConstraintSet kset(ls->getRobotModel());
     kset.add(goal->constraints, ls->getTransforms());
@@ -194,7 +195,7 @@ bool StateValidationCapability::computeService(moveit_msgs::GetStateValidity::Re
   }
 
   // evaluate constraints
-  if (!kinematic_constraints::isEmpty(req.constraints))
+  if (!moveit::core::isEmpty(req.constraints))
   {
     kinematic_constraints::KinematicConstraintSet kset(ls->getRobotModel());
     kset.add(req.constraints, ls->getTransforms());

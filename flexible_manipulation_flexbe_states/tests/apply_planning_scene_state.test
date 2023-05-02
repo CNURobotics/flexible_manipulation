@@ -12,4 +12,4 @@ input:
   action_topic : "apply_planning_scene"
 
 outcome:
-    done
+    failed

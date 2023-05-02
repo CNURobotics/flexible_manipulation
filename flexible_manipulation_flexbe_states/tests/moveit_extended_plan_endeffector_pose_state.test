@@ -12,7 +12,7 @@ params:
 
 input:
   target_pose : "HOME"
-  hand        : "left"
+  move_group  : "arm"
 
 outcome:
     param_error

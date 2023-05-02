@@ -1,6 +1,6 @@
 <package>
   <name>flexible_manipulation</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>
     Flexible Manipulation is a collection of MoveIt capabilities that
     interface with FlexBE (http://wiki.ros.org/flexbe) compatible state implementations.

@@ -215,8 +215,8 @@ class JointValuesToMoveItPlanState(EventState):
             action_goal.request.goal_constraints.append(constraints)
             self.request_time = rospy.Time.now()
 
-            print "------------  Planning Goal -----"
-            print str(action_goal)
+            print("------------  Planning Goal -----")
+            print(str(action_goal))
 
             self.action_client.send_goal(self.current_action_topic, action_goal)
             if self.timeout_duration > rospy.Duration(0.0):

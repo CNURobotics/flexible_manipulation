@@ -188,8 +188,8 @@ class StateValidationState(EventState):
                 self.timeout_target = None
 
             Logger.logwarn('before send goal get state in the StateValidationAction client for %s' % (self.name))
-            print str(action_goal)
-            print self.current_action_topic
+            print(str(action_goal))
+            print(self.current_action_topic)
 
             self.client.send_goal(self.current_action_topic, action_goal)
             Logger.logwarn('after send goal in the StateValidationAction client for %s' % (self.name))

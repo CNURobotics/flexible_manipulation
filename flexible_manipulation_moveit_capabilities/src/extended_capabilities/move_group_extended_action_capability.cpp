@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- * Copyright (c) 2018
+ * Copyright (c) 2018-2023
  * Capable Humanitarian Robotics and Intelligent Systems Lab (CHRISLab)
  * Christopher Newport University
  *
@@ -53,6 +53,7 @@
 #include <moveit/trajectory_processing/trajectory_tools.h>
 
 #include <moveit/robot_state/conversions.h>
+#include <moveit/utils/message_checks.h>
 #include <moveit_msgs/DisplayTrajectory.h>
 //#include <vigir_planning_msgs/RequestWholeBodyTrajectory.h>
 //#include <vigir_planning_msgs/RequestWholeBodyCartesianTrajectory.h>
@@ -435,7 +436,7 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallbackPlanAndE
            "MoveGroupExtended action. Forwarding to planning and execution "
            "pipeline.");
 
-  if (planning_scene::PlanningScene::isEmpty(goal->planning_options.planning_scene_diff))
+  if (moveit::core::isEmpty(goal->planning_options.planning_scene_diff))
   {
     planning_scene_monitor::LockedPlanningSceneRO lscene(context_->planning_scene_monitor_);
     const robot_state::RobotState& current_state = lscene->getCurrentState();
@@ -458,10 +459,10 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallbackPlanAndE
   plan_execution::PlanExecution::Options opt;
 
   const moveit_msgs::MotionPlanRequest& motion_plan_request =
-      planning_scene::PlanningScene::isEmpty(goal->request.start_state) ? goal->request :
+      moveit::core::isEmpty(goal->request.start_state) ? goal->request :
                                                                           clearRequestStartState(goal->request);
   const moveit_msgs::PlanningScene& planning_scene_diff =
-      planning_scene::PlanningScene::isEmpty(goal->planning_options.planning_scene_diff.robot_state) ?
+      moveit::core::isEmpty(goal->planning_options.planning_scene_diff.robot_state) ?
           goal->planning_options.planning_scene_diff :
           clearSceneRobotState(goal->planning_options.planning_scene_diff);
 
@@ -519,7 +520,7 @@ void flexible_manipulation::MoveGroupExtendedAction::executeMoveCallbackPlanOnly
                                            // modify the world representation
                                            // while diff() is called
   const planning_scene::PlanningSceneConstPtr& the_scene =
-      (planning_scene::PlanningScene::isEmpty(goal->planning_options.planning_scene_diff)) ?
+      (moveit::core::isEmpty(goal->planning_options.planning_scene_diff)) ?
           static_cast<const planning_scene::PlanningSceneConstPtr&>(lscene) :
           lscene->diff(goal->planning_options.planning_scene_diff);
   planning_interface::MotionPlanResponse res;
@@ -664,6 +665,8 @@ void flexible_manipulation::MoveGroupExtendedAction::executeCartesianMoveCallbac
   cart_path.request.group_name = goal->request.group_name;
 
   setMoveState(move_group::PLANNING);
+
+  // Deprecated for Melodic - See https://github.com/ros-planning/moveit/issues/3327
   this->computeCartesianPath(cart_path.request, cart_path.response, goal->request.max_velocity_scaling_factor);
 
   {
@@ -885,7 +888,7 @@ bool flexible_manipulation::MoveGroupExtendedAction::computeCartesianPath(moveit
           robot_state::GroupStateValidityCallbackFn constraint_fn;
           boost::scoped_ptr<planning_scene_monitor::LockedPlanningSceneRO> ls;
           boost::scoped_ptr<kinematic_constraints::KinematicConstraintSet> kset;
-          if ((req.avoid_collisions != 0u) || !kinematic_constraints::isEmpty(req.path_constraints))
+          if ((req.avoid_collisions != 0u) || !moveit::core::isEmpty(req.path_constraints))
           {
             ls.reset(new planning_scene_monitor::LockedPlanningSceneRO(context_->planning_scene_monitor_));
             kset.reset(new kinematic_constraints::KinematicConstraintSet((*ls)->getRobotModel()));
@@ -920,12 +923,14 @@ bool flexible_manipulation::MoveGroupExtendedAction::computeCartesianPath(moveit
             kinematics::KinematicsQueryOptions options;
             options.lock_redundant_joints = true;
 
+            // Deprecated for Melodic - See https://github.com/ros-planning/moveit/issues/3327
             res.fraction = start_state.computeCartesianPath(&group_cpy, traj, start_state.getLinkModel(link_name),
                                                             waypoints, global_frame, req.max_step, req.jump_threshold,
                                                             constraint_fn, options);
           }
           else
           {
+            // Deprecated for Melodic - See https://github.com/ros-planning/moveit/issues/3327
             res.fraction =
                 start_state.computeCartesianPath(jmg, traj, start_state.getLinkModel(link_name), waypoints,
                                                  global_frame, req.max_step, req.jump_threshold, constraint_fn);
@@ -992,7 +997,7 @@ flexible_manipulation::MoveGroupExtendedAction::getCollisionSettingsPlanningScen
     planning_scene_monitor::LockedPlanningSceneRO& lscene) const
 {
   const planning_scene::PlanningSceneConstPtr& the_scene =
-      (planning_scene::PlanningScene::isEmpty(goal->planning_options.planning_scene_diff)) ?
+      (moveit::core::isEmpty(goal->planning_options.planning_scene_diff)) ?
           static_cast<const planning_scene::PlanningSceneConstPtr&>(lscene) :
           lscene->diff(goal->planning_options.planning_scene_diff);
 
@@ -1013,7 +1018,7 @@ flexible_manipulation::MoveGroupExtendedAction::getCollisionSettingsPlanningScen
     if (goal->extended_planning_options.allow_environment_collisions != 0u)
     {
       std::vector<std::string> object_strings =
-          context_->planning_scene_monitor_->getPlanningScene()->getCollisionWorld()->getWorld()->getObjectIds();
+          context_->planning_scene_monitor_->getPlanningScene()->getCollisionEnv()->getWorld()->getObjectIds();
 
       size_t size = object_strings.size();
 
@@ -1049,7 +1054,7 @@ flexible_manipulation::MoveGroupExtendedAction::getCollisionSettingsPlanningScen
     if (goal->extended_planning_options.extended_planning_scene_diff.allow_end_effector_environment_collision != 0u)
     {
       std::vector<std::string> object_strings =
-          context_->planning_scene_monitor_->getPlanningScene()->getCollisionWorld()->getWorld()->getObjectIds();
+          context_->planning_scene_monitor_->getPlanningScene()->getCollisionEnv()->getWorld()->getObjectIds();
 
       size_t size = object_strings.size();
 

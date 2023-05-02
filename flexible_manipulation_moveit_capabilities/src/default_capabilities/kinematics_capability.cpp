@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- * Copyright (c) 2018
+ * Copyright (c) 2018-2023
  * Capable Humanitarian Robotics and Intelligent Systems Lab (CHRISLab)
  * Christopher Newport University
  *
@@ -44,6 +44,7 @@
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit/move_group/capability_names.h>
 #include <moveit/robot_state/conversions.h>
+#include <moveit/utils/message_checks.h>
 
 namespace flexible_manipulation
 {
@@ -213,7 +214,7 @@ bool KinematicsCapability::computeIKService(moveit_msgs::GetPositionIK::Request&
 
   // check if the planning scene needs to be kept locked; if so, call
   // computeIK() in the scope of the lock
-  if ((req.ik_request.avoid_collisions != 0u) || !kinematic_constraints::isEmpty(req.ik_request.constraints))
+  if ((req.ik_request.avoid_collisions != 0u) || !moveit::core::isEmpty(req.ik_request.constraints))
   {
     planning_scene_monitor::LockedPlanningSceneRO ls(context_->planning_scene_monitor_);
     kinematic_constraints::KinematicConstraintSet kset(ls->getRobotModel());
